@@ -1,3 +1,4 @@
+const fs = require("fs");
 const { WrappedPlugin } = require("./WrappedPlugin");
 const { getModuleName, getLoaderNames } = require("./utils");
 const { getHumanOutput, getMiscOutput, getPluginsOutput, getLoadersOutput } = require("./output");
