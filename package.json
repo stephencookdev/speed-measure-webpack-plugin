@@ -16,6 +16,9 @@
     "url": "https://github.com/stephencookdev/speed-measure-webpack-plugin/issues"
   },
   "homepage": "https://github.com/stephencookdev/speed-measure-webpack-plugin#readme",
+  "engines": {
+    "node": ">=6.11.5"
+  },
   "peerDependencies": {
     "webpack": "^3"
   },

@@ -65,34 +65,31 @@ module.exports.getMiscOutput = data => ({
 });
 
 module.exports.getPluginsOutput = data =>
-  Object.values(data).reduce((acc, inData) => {
+  Object.keys(data).reduce((acc, key) => {
+    const inData = data[key];
     const startEndsByName = groupBy("name", inData);
 
-    return startEndsByName.reduce(
-      (innerAcc, startEnds) => ({
-        ...innerAcc,
-        [startEnds[0].name]:
-          (innerAcc[startEnds[0].name] || 0) + getTotalActiveTime(startEnds),
-      }),
-      acc
-    );
+    return startEndsByName.reduce((innerAcc, startEnds) => {
+      innerAcc[startEnds[0].name] =
+        (innerAcc[startEnds[0].name] || 0) + getTotalActiveTime(startEnds);
+      return innerAcc;
+    }, acc);
   }, {});
 
 module.exports.getLoadersOutput = data =>
   Object.keys(data).reduce((acc, key) => {
     const startEndsByLoader = groupBy("loaders", data[key]);
 
-    return {
-      ...acc,
-      [key]: startEndsByLoader.map(startEnds => {
-        const averages = getAverages(startEnds);
-        const activeTime = getTotalActiveTime(startEnds);
+    acc[key] = startEndsByLoader.map(startEnds => {
+      const averages = getAverages(startEnds);
+      const activeTime = getTotalActiveTime(startEnds);
 
-        return {
-          averages,
-          activeTime,
-          loaders: startEnds[0].loaders,
-        };
-      }),
-    };
+      return {
+        averages,
+        activeTime,
+        loaders: startEnds[0].loaders,
+      };
+    });
+
+    return acc;
   }, {});

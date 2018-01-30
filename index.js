@@ -24,10 +24,10 @@ module.exports = class SpeedMeasurePlugin {
 
     if (Array.isArray(plugins)) {
       let i = 1;
-      plugins = plugins.reduce((acc, p) => ({
-        ...acc,
-        ["plugin " + i++]: p,
-      }));
+      plugins = plugins.reduce((acc, p) => {
+        acc["plugin " + i++] = p;
+        return acc;
+      });
     }
     plugins = plugins || {};
 
@@ -60,10 +60,8 @@ module.exports = class SpeedMeasurePlugin {
     const curTime = new Date().getTime();
 
     if (eventType === "start") {
-      eventList.push({
-        start: curTime,
-        ...data,
-      });
+      data.start = curTime;
+      eventList.push(data);
     } else if (eventType === "end") {
       const matchingEvent = eventList.find(
         e => !e.end && (e.id === data.id || e.name === data.name)

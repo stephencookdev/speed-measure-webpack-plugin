@@ -2,8 +2,6 @@
 
 **_(this plugin is not yet stable, and not safe for production)_**
 
-**_(so far tested only with webpack@3.10.0, node@8.9.4)_**
-
 This plugin measures your webpack build speed, giving an output like this:
 
 ```
