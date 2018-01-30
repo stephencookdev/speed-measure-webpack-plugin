@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/stephencookdev/speed-measure-webpack-plugin/issues"
   },
-  "homepage": "https://github.com/stephencookdev/speed-measure-webpack-plugin#readme"
+  "homepage": "https://github.com/stephencookdev/speed-measure-webpack-plugin#readme",
+  "peerDependencies": {
+    "webpack": "^3"
+  },
+  "devDependencies": {
+    "prettier": "1.10.2"
+  }
 }
