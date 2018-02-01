@@ -20,6 +20,8 @@ module.exports = class SpeedMeasurePlugin {
   }
 
   static wrapPlugins(plugins, options) {
+    if (options.disable) return Object.keys(plugins).map(k => plugins[k]);
+
     const smp = new SpeedMeasurePlugin(options);
 
     if (Array.isArray(plugins)) {
@@ -82,6 +84,8 @@ module.exports = class SpeedMeasurePlugin {
   }
 
   apply(compiler) {
+    if (this.options.disable) return;
+
     compiler.plugin("compile", () => {
       this.addTimeEvent("misc", "compile", "start", { watch: false });
     });

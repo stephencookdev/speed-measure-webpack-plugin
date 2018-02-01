@@ -92,3 +92,9 @@ Or you can also specify config:
 
  * `null` - prints to `console.log`
  * `"foo"` - prints (and makes, if no file exists) to the file at location `"foo"`
+
+## `disable` ##
+
+(default `null`)
+
+If truthy, this plugin does nothing at all (recommended by default)
