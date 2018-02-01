@@ -1,6 +1,4 @@
-# Speed Measure Webpack Plugin
-
-**_(this plugin is not yet stable, and not safe for production)_**
+# Speed Measure Plugin
 
 This plugin measures your webpack build speed, giving an output like this:
 
@@ -32,15 +30,15 @@ file-loader took 7.11 seconds
 
 # Getting Started
 
-`npm install --save-dev speed-measure-webpack-plugin`
+`npm install --save speed-measure-webpack-plugin`
 
 Change your webpack config from
 
-```
+```javascript
 {
-  entry: {...},
-  output: {...},
-  module: {...},
+  entry: {/*...*/},
+  output: {/*...*/},
+  module: {/*...*/},
   plugins: [
     new MyPlugin(),
     new MyOtherPlugin()
@@ -50,11 +48,13 @@ Change your webpack config from
 
 to
 
-```
+```javascript
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+
 {
-  entry: {...},
-  output: {...},
-  module: {...},
+  entry: {/*...*/},
+  output: {/*...*/},
+  module: {/*...*/},
   plugins: SpeedMeasurePlugin.wrapPlugins({
     MyPlugin: new MyPlugin(),
     MyOtherPlugin: new MyOtherPlugin()
@@ -64,11 +64,13 @@ to
 
 Or you can also specify config:
 
-```
+```javascript
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+
 {
-  entry: {...},
-  output: {...},
-  module: {...},
+  entry: {/*...*/},
+  output: {/*...*/},
+  module: {/*...*/},
   plugins: SpeedMeasurePlugin.wrapPlugins({
     MyPlugin: new MyPlugin(),
     MyOtherPlugin: new MyOtherPlugin()
@@ -77,6 +79,38 @@ Or you can also specify config:
     outputTarget: "myFile.txt"
   })
 }
+```
+
+If you're using `webpack-merge`, then you can do:
+
+```javascript
+// base config file
+const smp = new SpeedMeasurePlugin({
+  outputFormat: "human"
+});
+
+const finalConfig = webpackMerge(
+  [baseConfig, envSpecificConfig].map(configGenerator =>
+    configGenerator({
+      smp,
+      // other options
+    })
+  )
+);
+
+// baseConfig
+export const baseConfig = ({ smp }) => ({
+  plugins: smp.wrapPlugins({
+    MyPlugin: new MyPlugin()
+  }).concat(smp)
+})
+
+// envSpecificConfig
+export const envSpecificConfig = ({ smp }) => ({
+  plugins: smp.wrapPlugins({
+    MyOtherPlugin: new MyOtherPlugin()
+  })
+})
 ```
 
 ## `outputFormat` ##

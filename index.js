@@ -14,6 +14,7 @@ module.exports = class SpeedMeasurePlugin {
 
     this.timeEventData = {};
 
+    this.wrapPlugins = this.wrapPlugins.bind(this);
     this.getOutput = this.getOutput.bind(this);
     this.addTimeEvent = this.addTimeEvent.bind(this);
     this.apply = this.apply.bind(this);
@@ -24,6 +25,12 @@ module.exports = class SpeedMeasurePlugin {
 
     const smp = new SpeedMeasurePlugin(options);
 
+    const wrappedPlugins = smp.wrapPlugins(plugins);
+
+    return wrappedPlugins.concat(smp);
+  }
+
+  wrapPlugins(plugins) {
     if (Array.isArray(plugins)) {
       let i = 1;
       plugins = plugins.reduce((acc, p) => {
@@ -33,11 +40,9 @@ module.exports = class SpeedMeasurePlugin {
     }
     plugins = plugins || {};
 
-    const wrappedPlugins = Object.keys(plugins).map(
-      pluginName => new WrappedPlugin(plugins[pluginName], pluginName, smp)
+    return Object.keys(plugins).map(
+      pluginName => new WrappedPlugin(plugins[pluginName], pluginName, this)
     );
-
-    return wrappedPlugins.concat(smp);
   }
 
   getOutput() {
