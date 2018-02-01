@@ -1,32 +1,9 @@
-# Speed Measure Plugin
+<div align="center"><h1>Speed Measure Plugin</h1></div>
+<br>
 
 This plugin measures your webpack build speed, giving an output like this:
 
-```
-----------------------------
-General output time took 1.01 minutes
-
-IgnorePlugin took 0.62 seconds
-ForceCaseSensitivityPlugin took 20.27 seconds
-SpriteLoaderPlugin took 30 milliseconds
-ExtractTextPlugin took 9.44 seconds
-DefinePlugin took 1 milliseconds
-
-thread-loader, and
-babel-loader took 0.56 minutes
-    Med   = 401 milliseconds,
-    x̄     = 1.08 seconds,
-    σ     = 0.57 seconds,
-    range = (268 milliseconds, 2.49 seconds),
-    n     = 247
-file-loader took 7.11 seconds
-    Med   = 1.41 seconds,
-    x̄     = 1.26 seconds,
-    σ     = 436 milliseconds,
-    range = (340 milliseconds, 2.02 seconds),
-    n     = 29
-----------------------------
-```
+![Preview of Speed Measure Plugin's output](preview.png)
 
 # Getting Started
 

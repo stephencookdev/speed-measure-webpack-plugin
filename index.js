@@ -7,6 +7,7 @@ const {
   getPluginsOutput,
   getLoadersOutput,
 } = require("./output");
+const { stripColours } = require("./colours");
 
 module.exports = class SpeedMeasurePlugin {
   constructor(options) {
@@ -99,10 +100,11 @@ module.exports = class SpeedMeasurePlugin {
 
       const output = this.getOutput();
       if (this.options.outputTarget) {
+        const strippedOutput = stripColours(output);
         const writeMethod = fs.existsSync(this.options.outputTarget)
           ? fs.appendFile
           : fs.writeFile;
-        writeMethod(this.options.outputTarget, output + "\n", err => {
+        writeMethod(this.options.outputTarget, strippedOutput + "\n", err => {
           if (err) throw err;
           console.log("Outputted timing info to " + this.options.outputTarget);
         });

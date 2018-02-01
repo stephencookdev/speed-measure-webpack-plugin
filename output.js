@@ -1,3 +1,4 @@
+const { b } = require("./colours");
 const { groupBy, getAverages, getTotalActiveTime } = require("./utils");
 
 const humanTime = ms => {
@@ -11,22 +12,25 @@ const humanTime = ms => {
   return ms.toFixed(0) + " milliseconds";
 };
 
-const b = text => "\x1b[1m" + text + "\x1b[0m";
-const bb = text => "\x1b[1m\x1b[32m" + text + "\x1b[0m";
-
 module.exports.getHumanOutput = outputObj => {
   const delim = "----------------------------";
   let output = delim + "\n";
 
   if (outputObj.misc) {
     output +=
-      "General output time took " + bb(humanTime(outputObj.misc.compileTime));
+      "General output time took " +
+      b(humanTime(outputObj.misc.compileTime), outputObj.misc.compileTime);
     output += "\n\n";
   }
   if (outputObj.plugins) {
     Object.keys(outputObj.plugins).forEach(pluginName => {
       output +=
-        b(pluginName) + " took " + bb(humanTime(outputObj.plugins[pluginName]));
+        b(pluginName) +
+        " took " +
+        b(
+          humanTime(outputObj.plugins[pluginName]),
+          outputObj.plugins[pluginName]
+        );
       output += "\n";
     });
     output += "\n";
@@ -36,22 +40,24 @@ module.exports.getHumanOutput = outputObj => {
       output +=
         loaderObj.loaders.map(b).join(", and \n") +
         " took " +
-        bb(humanTime(loaderObj.activeTime));
+        b(humanTime(loaderObj.activeTime), loaderObj.activeTime);
       output += "\n";
-      output += "    Med   = " + humanTime(loaderObj.averages.median) + ",\n";
-      output += "    x̄     = " + humanTime(loaderObj.averages.mean) + ",\n";
+      output +=
+        "    mean         = " + humanTime(loaderObj.averages.median) + ",\n";
+      output +=
+        "    median       = " + humanTime(loaderObj.averages.mean) + ",\n";
       if (typeof loaderObj.averages.variance === "number")
         output +=
-          "    σ     = " +
+          "    s.d          = " +
           humanTime(Math.sqrt(loaderObj.averages.variance)) +
           ", \n";
       output +=
-        "    range = (" +
+        "    range        = (" +
         humanTime(loaderObj.averages.range.start) +
         ", " +
         humanTime(loaderObj.averages.range.end) +
         "), \n";
-      output += "    n     = " + loaderObj.averages.dataPoints + "\n";
+      output += "    module count = " + loaderObj.averages.dataPoints + "\n";
     });
   }
 
