@@ -43,9 +43,9 @@ module.exports.getHumanOutput = outputObj => {
         b(humanTime(loaderObj.activeTime), loaderObj.activeTime);
       output += "\n";
       output +=
-        "    mean         = " + humanTime(loaderObj.averages.median) + ",\n";
+        "    median       = " + humanTime(loaderObj.averages.median) + ",\n";
       output +=
-        "    median       = " + humanTime(loaderObj.averages.mean) + ",\n";
+        "    mean         = " + humanTime(loaderObj.averages.mean) + ",\n";
       if (typeof loaderObj.averages.variance === "number")
         output +=
           "    s.d          = " +
