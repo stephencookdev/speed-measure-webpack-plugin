@@ -55,9 +55,9 @@ module.exports = class SpeedMeasurePlugin {
     if (this.timeEventData.loaders)
       outputObj.loaders = getLoadersOutput(this.timeEventData.loaders);
 
-    return this.options.outputFormat === "human"
-      ? getHumanOutput(outputObj)
-      : JSON.stringify(outputObj, null, 2);
+    return this.options.outputFormat === "json"
+      ? JSON.stringify(outputObj, null, 2)
+      : getHumanOutput(outputObj);
   }
 
   addTimeEvent(category, event, eventType, data = {}) {
