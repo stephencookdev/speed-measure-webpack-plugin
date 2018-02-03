@@ -1,8 +1,8 @@
 <div align="center">
-  <img width="120" height="120" src="logo.svg">
+  <img width="120" height="120" src="https://rawgit.com/stephencookdev/speed-measure-webpack-plugin/master/logo.svg">
   <h1>
     Speed Measure Plugin
-    <div><em><sup><sub>(for webpack)</sub></sup></em></div>
+    <div><sup><em>(for webpack)</em></sup></div>
   </h1>
 </div>
 <br>
