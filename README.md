@@ -93,20 +93,23 @@ SpeedMeasurePlugin.wrapPlugins(pluginMap, options);
 
 ### `options.outputFormat`
 
-Type: `String`<br>
+Type: `String|Function`<br>
 Default: `"human"`
 
 Determines in what format this plugin prints its measurements
 
  * `"json"` - produces a JSON blob
  * `"human"` - produces a human readable output
+ * `"humanVerbose"` - produces a more verbose version of the human readable output
+ * If a function, it will call the function with the JSON blob being the first parameter, and just the response of the function as the output
 
 ### `options.outputTarget`
 
-Type: `String`<br>
-Default: `undefined`
+Type: `String|Function`<br>
+Default: `console.log`
 
-Specifies the path to a file to output to. If undefined, then output will print to `console.log`
+* If a string, it specifies the path to a file to output to.
+* If a function, it will call the function with the output as the first parameter
 
 ### `options.disable`
 

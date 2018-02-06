@@ -55,9 +55,13 @@ module.exports = class SpeedMeasurePlugin {
     if (this.timeEventData.loaders)
       outputObj.loaders = getLoadersOutput(this.timeEventData.loaders);
 
-    return this.options.outputFormat === "json"
-      ? JSON.stringify(outputObj, null, 2)
-      : getHumanOutput(outputObj);
+    if (this.options.outputFormat === "json")
+      return JSON.stringify(outputObj, null, 2);
+    if (typeof this.options.outputFormat === "function")
+      return this.options.outputFormat(outputObj);
+    return getHumanOutput(outputObj, {
+      verbose: this.options.outputFormat === "humanVerbose",
+    });
   }
 
   addTimeEvent(category, event, eventType, data = {}) {
@@ -99,7 +103,7 @@ module.exports = class SpeedMeasurePlugin {
       this.addTimeEvent("misc", "compile", "end");
 
       const output = this.getOutput();
-      if (this.options.outputTarget) {
+      if (typeof this.options.outputTarget === "string") {
         const strippedOutput = stripColours(output);
         const writeMethod = fs.existsSync(this.options.outputTarget)
           ? fs.appendFile
@@ -109,7 +113,8 @@ module.exports = class SpeedMeasurePlugin {
           console.log("Outputted timing info to " + this.options.outputTarget);
         });
       } else {
-        console.log(output);
+        const outputFunc = this.options.outputTarget || console.log;
+        outputFunc(output);
       }
 
       this.timeEventData = {};

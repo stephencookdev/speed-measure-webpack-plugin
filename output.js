@@ -1,67 +1,94 @@
-const { b } = require("./colours");
+const MS_IN_MINUTE = 60000;
+const MS_IN_SECOND = 1000;
+
+const { fg, bg } = require("./colours");
 const { groupBy, getAverages, getTotalActiveTime } = require("./utils");
 
-const humanTime = ms => {
-  const hours = ms / 3600000;
-  const minutes = ms / 60000;
-  const seconds = ms / 1000;
+const humanTime = (ms, options = {}) => {
+  if (options.verbose) {
+    return ms.toLocaleString() + " ms";
+  }
 
-  if (hours > 0.5) return hours.toFixed(2) + " hours";
-  if (minutes > 0.5) return minutes.toFixed(2) + " minutes";
-  if (seconds > 0.5) return seconds.toFixed(2) + " seconds";
-  return ms.toFixed(0) + " milliseconds";
+  const minutes = Math.floor(ms / MS_IN_MINUTE);
+  const secondsRaw = (ms - minutes * MS_IN_MINUTE) / MS_IN_SECOND;
+  const secondsWhole = Math.floor(secondsRaw);
+  const remainderPrecision = secondsWhole > 0 ? 2 : 3;
+  const secondsRemainder = Math.min(secondsRaw - secondsWhole, 0.99);
+  const seconds =
+    secondsWhole +
+    secondsRemainder
+      .toPrecision(remainderPrecision)
+      .replace(/^0/, "")
+      .replace(/0+$/, "")
+      .replace(/^\.$/, "");
+
+  let time = "";
+
+  if (minutes > 0) time += minutes + " mins, ";
+  time += seconds + " secs";
+
+  return time;
 };
 
-module.exports.getHumanOutput = outputObj => {
-  const delim = "----------------------------";
-  let output = delim + "\n";
+module.exports.getHumanOutput = (outputObj, options = {}) => {
+  const hT = x => humanTime(x, options);
+  const smpTag = bg(" SMP ") + " ⏱ ";
+  let output = "\n\n" + smpTag + "\n";
 
   if (outputObj.misc) {
     output +=
       "General output time took " +
-      b(humanTime(outputObj.misc.compileTime), outputObj.misc.compileTime);
+      fg(hT(outputObj.misc.compileTime, options), outputObj.misc.compileTime);
     output += "\n\n";
   }
   if (outputObj.plugins) {
-    Object.keys(outputObj.plugins).forEach(pluginName => {
-      output +=
-        b(pluginName) +
-        " took " +
-        b(
-          humanTime(outputObj.plugins[pluginName]),
-          outputObj.plugins[pluginName]
-        );
-      output += "\n";
-    });
+    output += smpTag + " Plugins\n";
+    Object.keys(outputObj.plugins)
+      .sort(
+        (name1, name2) => outputObj.plugins[name2] - outputObj.plugins[name1]
+      )
+      .forEach(pluginName => {
+        output +=
+          fg(pluginName) +
+          " took " +
+          fg(hT(outputObj.plugins[pluginName]), outputObj.plugins[pluginName]);
+        output += "\n";
+      });
     output += "\n";
   }
   if (outputObj.loaders) {
-    outputObj.loaders.build.forEach(loaderObj => {
-      output +=
-        loaderObj.loaders.map(b).join(", and \n") +
-        " took " +
-        b(humanTime(loaderObj.activeTime), loaderObj.activeTime);
-      output += "\n";
-      output +=
-        "    median       = " + humanTime(loaderObj.averages.median) + ",\n";
-      output +=
-        "    mean         = " + humanTime(loaderObj.averages.mean) + ",\n";
-      if (typeof loaderObj.averages.variance === "number")
+    output += smpTag + " Loaders\n";
+    outputObj.loaders.build
+      .sort((obj1, obj2) => obj2.activeTime - obj1.activeTime)
+      .forEach(loaderObj => {
         output +=
-          "    s.d          = " +
-          humanTime(Math.sqrt(loaderObj.averages.variance)) +
-          ", \n";
-      output +=
-        "    range        = (" +
-        humanTime(loaderObj.averages.range.start) +
-        ", " +
-        humanTime(loaderObj.averages.range.end) +
-        "), \n";
-      output += "    module count = " + loaderObj.averages.dataPoints + "\n";
-    });
+          loaderObj.loaders.map(fg).join(", and \n") +
+          " took " +
+          fg(hT(loaderObj.activeTime), loaderObj.activeTime) +
+          "\n";
+
+        if (options.verbose) {
+          output +=
+            "    median       = " + hT(loaderObj.averages.median) + ",\n";
+          output += "    mean         = " + hT(loaderObj.averages.mean) + ",\n";
+          if (typeof loaderObj.averages.variance === "number")
+            output +=
+              "    s.d          = " +
+              hT(Math.sqrt(loaderObj.averages.variance)) +
+              ", \n";
+          output +=
+            "    range        = (" +
+            hT(loaderObj.averages.range.start) +
+            " --> " +
+            hT(loaderObj.averages.range.end) +
+            "), \n";
+        }
+
+        output += "    module count = " + loaderObj.averages.dataPoints + "\n";
+      });
   }
 
-  output += delim + "\n";
+  output += "\n\n";
 
   return output;
 };
