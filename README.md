@@ -43,52 +43,22 @@ to
 ```javascript
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 
-const webpackConfig = {
-  plugins: SpeedMeasurePlugin.wrapPlugins({
-    MyPlugin: new MyPlugin(),
-    MyOtherPlugin: new MyOtherPlugin()
-  })
-}
-```
-
-If you're using `webpack-merge`, then you can do:
-
-```javascript
 const smp = new SpeedMeasurePlugin();
 
-const baseConfig = {
-  plugins: smp.wrapPlugins({
-    MyPlugin: new MyPlugin()
-  }).concat(smp)
-  // ^ note the `.concat(smp)`
-};
-
-const envSpecificConfig = {
-  plugins: smp.wrapPlugins({
-    MyOtherPlugin: new MyOtherPlugin()
-  })
-  // ^ note no `.concat(smp)`
-}
-
-const finalWebpackConfig = webpackMerge([
-  baseConfig,
-  envSpecificConfig
-]);
-
+const webpackConfig = smp.wrap({
+  plugins: [
+    new MyPlugin(),
+    new MyOtherPlugin()
+  ]
+});
 ```
 
 ## Options
 
-Options are passed in to the constructor
+Options are (optionally) passed in to the constructor
 
 ```javascript
 const smp = new SpeedMeasurePlugin(options);
-```
-
-or as the second argument to the static `wrapPlugins`
-
-```javascript
-SpeedMeasurePlugin.wrapPlugins(pluginMap, options);
 ```
 
 ### `options.outputFormat`

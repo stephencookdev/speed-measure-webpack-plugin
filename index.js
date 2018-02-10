@@ -14,36 +14,29 @@ module.exports = class SpeedMeasurePlugin {
     this.options = options || {};
 
     this.timeEventData = {};
+    this.smpPluginAdded = false;
 
-    this.wrapPlugins = this.wrapPlugins.bind(this);
+    this.wrap = this.wrap.bind(this);
     this.getOutput = this.getOutput.bind(this);
     this.addTimeEvent = this.addTimeEvent.bind(this);
     this.apply = this.apply.bind(this);
   }
 
-  static wrapPlugins(plugins, options) {
-    if (options.disable) return Object.keys(plugins).map(k => plugins[k]);
+  wrap(config) {
+    if (this.options.disable) return config;
 
-    const smp = new SpeedMeasurePlugin(options);
+    config.plugins = (config.plugins || []).map(plugin => {
+      const pluginName = (plugin.constructor && plugin.constructor.name) ||
+        "(unable to deduce plugin name)";
+      return new WrappedPlugin(plugin, pluginName, this);
+    });
 
-    const wrappedPlugins = smp.wrapPlugins(plugins);
-
-    return wrappedPlugins.concat(smp);
-  }
-
-  wrapPlugins(plugins) {
-    if (Array.isArray(plugins)) {
-      let i = 1;
-      plugins = plugins.reduce((acc, p) => {
-        acc["plugin " + i++] = p;
-        return acc;
-      });
+    if(!this.smpPluginAdded) {
+      config.plugins = config.plugins.concat(this);
+      this.smpPluginAdded = true;
     }
-    plugins = plugins || {};
 
-    return Object.keys(plugins).map(
-      pluginName => new WrappedPlugin(plugins[pluginName], pluginName, this)
-    );
+    return config;
   }
 
   getOutput() {
