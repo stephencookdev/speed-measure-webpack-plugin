@@ -24,7 +24,7 @@ const humanTime = (ms, options = {}) => {
 
   let time = "";
 
-  if (minutes > 0) time += minutes + " mins, ";
+  if (minutes > 0) time += minutes + " min" + (minutes > 1 ? "s" : "") + ", ";
   time += seconds + " secs";
 
   return time;

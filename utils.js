@@ -51,7 +51,7 @@ module.exports.getLoaderNames = loaders =>
     ? loaders
         .map(l => l.loader)
         .map(l => l.replace(/^.*\/node_modules\/([^\/]+).*$/, (_, m) => m))
-    : ["(none)"];
+    : ["modules with no loaders"];
 
 module.exports.groupBy = (key, arr) => {
   const groups = [];
