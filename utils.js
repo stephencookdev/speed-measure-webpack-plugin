@@ -47,7 +47,7 @@ const range = xs =>
 module.exports.getModuleName = module => module.userRequest;
 
 module.exports.getLoaderNames = loaders =>
-  loaders.length
+  loaders && loaders.length
     ? loaders
         .map(l => l.loader)
         .map(l => l.replace(/^.*\/node_modules\/([^\/]+).*$/, (_, m) => m))
