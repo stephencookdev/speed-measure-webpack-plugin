@@ -47,15 +47,16 @@ const range = xs =>
 module.exports.getModuleName = module => module.userRequest;
 
 module.exports.getLoaderNames = loaders =>
-  loaders.length
+  loaders && loaders.length
     ? loaders
         .map(l => l.loader)
         .map(l => l.replace(/^.*\/node_modules\/([^\/]+).*$/, (_, m) => m))
+        .filter(l => !l.includes("speed-measure-webpack-plugin"))
     : ["modules with no loaders"];
 
 module.exports.groupBy = (key, arr) => {
   const groups = [];
-  arr.forEach(arrItem => {
+  (arr || []).forEach(arrItem => {
     const groupItem = groups.find(poss => isEqual(poss[0][key], arrItem[key]));
     if (groupItem) groupItem.push(arrItem);
     else groups.push([arrItem]);
@@ -82,3 +83,36 @@ module.exports.getTotalActiveTime = group => {
   const mergedRanges = mergeRanges(group);
   return mergedRanges.reduce((acc, range) => acc + range.end - range.start, 0);
 };
+
+const appendLoader = rules => {
+  if (!rules) return rules;
+  if (Array.isArray(rules)) return rules.map(appendLoader);
+
+  if (rules.loader) {
+    rules.use = [rules.loader];
+    delete rules.loader;
+  }
+
+  if (rules.use) {
+    rules.use.push("speed-measure-webpack-plugin/loader");
+  }
+
+  if (rules.oneOf) {
+    rules.oneOf = appendLoader(rules.oneOf);
+  }
+  if (rules.rules) {
+    rules.rules = appendLoader(rules.rules);
+  }
+  if (Array.isArray(rules.resource)) {
+    rules.resource = appendLoader(rules.resource);
+  }
+  if (rules.resource && rules.resource.and) {
+    rules.resource.and = appendLoader(rules.resource.and);
+  }
+  if (rules.resource && rules.resource.or) {
+    rules.resource.or = appendLoader(rules.resource.or);
+  }
+
+  return rules;
+};
+module.exports.appendLoader = appendLoader;

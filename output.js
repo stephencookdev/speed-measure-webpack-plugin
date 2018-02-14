@@ -85,6 +85,10 @@ module.exports.getHumanOutput = (outputObj, options = {}) => {
         }
 
         output += "    module count = " + loaderObj.averages.dataPoints + "\n";
+        output +=
+          "    sub loaders  = " +
+          JSON.stringify(loaderObj.subLoadersTime) +
+          "\n";
       });
   }
 
@@ -100,6 +104,7 @@ module.exports.getMiscOutput = data => ({
 module.exports.getPluginsOutput = data =>
   Object.keys(data).reduce((acc, key) => {
     const inData = data[key];
+
     const startEndsByName = groupBy("name", inData);
 
     return startEndsByName.reduce((innerAcc, startEnds) => {
@@ -109,20 +114,30 @@ module.exports.getPluginsOutput = data =>
     }, acc);
   }, {});
 
-module.exports.getLoadersOutput = data =>
-  Object.keys(data).reduce((acc, key) => {
-    const startEndsByLoader = groupBy("loaders", data[key]);
+module.exports.getLoadersOutput = data => {
+  const startEndsByLoader = groupBy("loaders", data.build);
+  const allSubLoaders = data["build-specific"];
 
-    acc[key] = startEndsByLoader.map(startEnds => {
-      const averages = getAverages(startEnds);
-      const activeTime = getTotalActiveTime(startEnds);
+  const buildData = startEndsByLoader.map(startEnds => {
+    const averages = getAverages(startEnds);
+    const activeTime = getTotalActiveTime(startEnds);
+    const subLoaders = groupBy(
+      "loader",
+      allSubLoaders.filter(l => startEnds.find(x => x.name === l.name))
+    );
+    console.log(JSON.stringify(subLoaders));
+    const subLoadersActiveTime = subLoaders.reduce((acc, loaders) => {
+      acc[loaders[0].loader] = getTotalActiveTime(loaders);
+      return acc;
+    }, {});
 
-      return {
-        averages,
-        activeTime,
-        loaders: startEnds[0].loaders,
-      };
-    });
+    return {
+      averages,
+      activeTime,
+      loaders: startEnds[0].loaders,
+      subLoadersTime: subLoadersActiveTime,
+    };
+  });
 
-    return acc;
-  }, {});
+  return { build: buildData };
+};

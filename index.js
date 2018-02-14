@@ -1,6 +1,7 @@
+const path = require("path");
 const fs = require("fs");
 const { WrappedPlugin } = require("./WrappedPlugin");
-const { getModuleName, getLoaderNames } = require("./utils");
+const { getModuleName, getLoaderNames, appendLoader } = require("./utils");
 const {
   getHumanOutput,
   getMiscOutput,
@@ -8,6 +9,8 @@ const {
   getLoadersOutput,
 } = require("./output");
 const { stripColours } = require("./colours");
+
+const NS = path.dirname(fs.realpathSync(__filename));
 
 module.exports = class SpeedMeasurePlugin {
   constructor(options) {
@@ -20,18 +23,24 @@ module.exports = class SpeedMeasurePlugin {
     this.getOutput = this.getOutput.bind(this);
     this.addTimeEvent = this.addTimeEvent.bind(this);
     this.apply = this.apply.bind(this);
+    this.provideLoaderTiming = this.provideLoaderTiming.bind(this);
   }
 
   wrap(config) {
     if (this.options.disable) return config;
 
     config.plugins = (config.plugins || []).map(plugin => {
-      const pluginName = (plugin.constructor && plugin.constructor.name) ||
+      const pluginName =
+        (plugin.constructor && plugin.constructor.name) ||
         "(unable to deduce plugin name)";
       return new WrappedPlugin(plugin, pluginName, this);
     });
 
-    if(!this.smpPluginAdded) {
+    if (config.module) {
+      config.module = appendLoader(config.module);
+    }
+
+    if (!this.smpPluginAdded) {
       config.plugins = config.plugins.concat(this);
       this.smpPluginAdded = true;
     }
@@ -68,12 +77,17 @@ module.exports = class SpeedMeasurePlugin {
       data.start = curTime;
       eventList.push(data);
     } else if (eventType === "end") {
-      const matchingEvent = eventList.find(
-        e => !e.end && (e.id === data.id || e.name === data.name)
-      );
-      const eventToModify = matchingEvent || eventList.find(e => !e.end);
+      const matchingEvent = eventList.find(e => {
+        const allowOverwrite = !e.end || !data.fillLast;
+        const idMatch = e.id !== undefined && e.id === data.id;
+        const nameMatch =
+          !data.id && e.name !== undefined && e.name === data.name;
+        return allowOverwrite && (idMatch || nameMatch);
+      });
+      const eventToModify =
+        matchingEvent || (data.fillLast && eventList.find(e => !e.end));
       if (!eventToModify) {
-        console.log(
+        console.error(
           "Could not find a matching event to end",
           category,
           event,
@@ -93,7 +107,7 @@ module.exports = class SpeedMeasurePlugin {
       this.addTimeEvent("misc", "compile", "start", { watch: false });
     });
     compiler.plugin("done", () => {
-      this.addTimeEvent("misc", "compile", "end");
+      this.addTimeEvent("misc", "compile", "end", { fillLast: true });
 
       const output = this.getOutput();
       if (typeof this.options.outputTarget === "string") {
@@ -114,12 +128,17 @@ module.exports = class SpeedMeasurePlugin {
     });
 
     compiler.plugin("compilation", compilation => {
+      compilation.plugin("normal-module-loader", loaderContext => {
+        loaderContext[NS] = this.provideLoaderTiming;
+      });
+
       compilation.plugin("build-module", module => {
         const name = getModuleName(module);
         if (name) {
           this.addTimeEvent("loaders", "build", "start", {
             name,
             loaders: getLoaderNames(module.loaders),
+            fillLast: true,
           });
         }
       });
@@ -127,9 +146,20 @@ module.exports = class SpeedMeasurePlugin {
       compilation.plugin("succeed-module", module => {
         const name = getModuleName(module);
         if (name) {
-          this.addTimeEvent("loaders", "build", "end", { name });
+          this.addTimeEvent("loaders", "build", "end", {
+            name,
+            fillLast: true,
+          });
         }
       });
+    });
+  }
+
+  provideLoaderTiming(info) {
+    this.addTimeEvent("loaders", "build-specific", info.type, {
+      loader: info.loaderName,
+      name: info.module,
+      id: info.id,
     });
   }
 };

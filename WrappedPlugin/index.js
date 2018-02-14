@@ -2,10 +2,10 @@ let idInc = 0;
 
 const genPluginMethod = (orig, pluginName, smp, type) =>
   function(method, func) {
-    const id = idInc++;
     const timeEventName = type + "/" + method;
 
     const wrappedFunc = (...args) => {
+      const id = idInc++;
       smp.addTimeEvent("plugins", timeEventName, "start", {
         id,
         name: pluginName,
