@@ -44,7 +44,7 @@ const wrap = (orig, pluginName, smp) => {
       return wrap(orig[property], pluginName, smp);
     },
     set: (target, property, value) => {
-      target[property] = value;
+      return Reflect.set(target, property, value);
     },
     deleteProperty: (target, property) => {
       delete target[property];
