@@ -2,16 +2,24 @@ let idInc = 0;
 
 const genPluginMethod = (orig, pluginName, smp, type) =>
   function(method, func) {
-    const id = idInc++;
-    const timeEventName = type + "/" + method;
-
     const wrappedFunc = (...args) => {
+      const id = idInc++;
+      const timeEventName = pluginName + "/" + type + "/" + method;
+      // we don't know if there's going to be a callback applied to a particular
+      // call, so we just set it multiple times, letting each one override the last
+      const addEndEvent = () =>
+        smp.addTimeEvent("plugins", timeEventName, "end", { id });
+
       smp.addTimeEvent("plugins", timeEventName, "start", {
         id,
         name: pluginName,
       });
-      const ret = func.apply(this, args.map(a => wrap(a, pluginName, smp)));
-      smp.addTimeEvent("plugins", timeEventName, "end", { id });
+      const ret = func.apply(
+        this,
+        args.map(a => wrap(a, pluginName, smp, addEndEvent))
+      );
+      addEndEvent();
+
       return ret;
     };
 
@@ -27,17 +35,42 @@ const construcNamesToWrap = [
   "ContextModuleFactory",
 ];
 
-const wrap = (orig, pluginName, smp) => {
-  const origConstrucName = orig && orig.constructor && orig.constructor.name;
-  const shouldWrap = construcNamesToWrap.includes(origConstrucName);
-  if (!shouldWrap) return orig;
+const wrap = (orig, pluginName, smp, addEndEvent) => {
+  if (!orig) return orig;
+
+  const getOrigConstrucName = target =>
+    target && target.constructor && target.constructor.name;
+  const getShouldWrap = target => {
+    const origConstrucName = getOrigConstrucName(target);
+    return construcNamesToWrap.includes(origConstrucName);
+  };
+  const shouldWrap = getShouldWrap(orig);
+  const shouldSoftWrap = Object.values(orig).some(getShouldWrap);
+
+  if (!shouldWrap && !shouldSoftWrap) {
+    const vanillaFunc =
+      typeof orig === "function" &&
+      orig &&
+      orig.prototype &&
+      orig.prototype.constructor !== orig;
+    return vanillaFunc
+      ? function() {
+          const ret = orig();
+          addEndEvent();
+          return ret;
+        }
+      : orig;
+  }
 
   const proxy = new Proxy(orig, {
     get: (target, property) => {
-      if (property === "plugin")
-        return genPluginMethod(orig, pluginName, smp, origConstrucName).bind(
-          proxy
-        );
+      if (shouldWrap && property === "plugin")
+        return genPluginMethod(
+          orig,
+          pluginName,
+          smp,
+          getOrigConstrucName(target)
+        ).bind(proxy);
 
       if (typeof orig[property] === "function")
         return orig[property].bind(proxy);
@@ -47,7 +80,7 @@ const wrap = (orig, pluginName, smp) => {
       return Reflect.set(target, property, value);
     },
     deleteProperty: (target, property) => {
-      delete target[property];
+      return Reflect.deleteProperty(target, property);
     },
   });
 
