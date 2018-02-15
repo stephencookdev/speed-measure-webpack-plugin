@@ -116,7 +116,7 @@ module.exports.getPluginsOutput = data =>
 
 module.exports.getLoadersOutput = data => {
   const startEndsByLoader = groupBy("loaders", data.build);
-  const allSubLoaders = data["build-specific"];
+  const allSubLoaders = data["build-specific"] || [];
 
   const buildData = startEndsByLoader.map(startEnds => {
     const averages = getAverages(startEnds);
@@ -125,7 +125,6 @@ module.exports.getLoadersOutput = data => {
       "loader",
       allSubLoaders.filter(l => startEnds.find(x => x.name === l.name))
     );
-    console.log(JSON.stringify(subLoaders));
     const subLoadersActiveTime = subLoaders.reduce((acc, loaders) => {
       acc[loaders[0].loader] = getTotalActiveTime(loaders);
       return acc;

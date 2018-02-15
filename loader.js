@@ -27,13 +27,17 @@ module.exports.pitch = function() {
     l.normal = function() {
       const almostThis = Object.assign({}, this, {
         async: function() {
-          callback({
-            module,
-            loaderName,
-            id: loaderId,
-            type: "end",
-          });
-          return this.async.apply(this, arguments);
+          const asyncCallback = this.async.apply(this, arguments);
+
+          return function() {
+            callback({
+              module,
+              loaderName,
+              id: loaderId,
+              type: "end",
+            });
+            asyncCallback.apply(this, arguments);
+          };
         }.bind(this),
       });
 
