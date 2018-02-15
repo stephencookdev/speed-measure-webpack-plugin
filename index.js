@@ -75,10 +75,15 @@ module.exports = class SpeedMeasurePlugin {
       data.start = curTime;
       eventList.push(data);
     } else if (eventType === "end") {
-      const matchingEvent = eventList.find(
-        e => !e.end && (e.id === data.id || e.name === data.name)
-      );
-      const eventToModify = matchingEvent || eventList.find(e => !e.end);
+      const matchingEvent = eventList.find(e => {
+        const allowOverwrite = !e.end || !data.fillLast;
+        const idMatch = e.id !== undefined && e.id === data.id;
+        const nameMatch =
+          !data.id && e.name !== undefined && e.name === data.name;
+        return allowOverwrite && (idMatch || nameMatch);
+      });
+      const eventToModify =
+        matchingEvent || (data.fillLast && eventList.find(e => !e.end));
       if (!eventToModify) {
         console.log(
           "Could not find a matching event to end",
@@ -100,7 +105,7 @@ module.exports = class SpeedMeasurePlugin {
       this.addTimeEvent("misc", "compile", "start", { watch: false });
     });
     compiler.plugin("done", () => {
-      this.addTimeEvent("misc", "compile", "end");
+      this.addTimeEvent("misc", "compile", "end", { fillLast: true });
 
       const output = this.getOutput();
       if (typeof this.options.outputTarget === "string") {
@@ -126,6 +131,7 @@ module.exports = class SpeedMeasurePlugin {
         if (name) {
           this.addTimeEvent("loaders", "build", "start", {
             name,
+            fillLast: true,
             loaders: getLoaderNames(module.loaders),
           });
         }
@@ -134,7 +140,10 @@ module.exports = class SpeedMeasurePlugin {
       compilation.plugin("succeed-module", module => {
         const name = getModuleName(module);
         if (name) {
-          this.addTimeEvent("loaders", "build", "end", { name });
+          this.addTimeEvent("loaders", "build", "end", {
+            name,
+            fillLast: true,
+          });
         }
       });
     });
