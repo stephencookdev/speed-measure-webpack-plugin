@@ -7,8 +7,11 @@ const genPluginMethod = (orig, pluginName, smp, type) =>
       const timeEventName = pluginName + "/" + type + "/" + method;
       // we don't know if there's going to be a callback applied to a particular
       // call, so we just set it multiple times, letting each one override the last
-      const addEndEvent = () =>
+      let endCallCount = 0;
+      const addEndEvent = () => {
+        endCallCount++;
         smp.addTimeEvent("plugins", timeEventName, "end", { id });
+      };
 
       smp.addTimeEvent("plugins", timeEventName, "start", {
         id,
@@ -18,7 +21,11 @@ const genPluginMethod = (orig, pluginName, smp, type) =>
         this,
         args.map(a => wrap(a, pluginName, smp, addEndEvent))
       );
-      addEndEvent();
+
+      // If the end event was invoked as a callback immediately, we can
+      // don't want to add another end event here (and it can actually cause
+      // errors, if webpack has finished compilation entirely)
+      if (!endCallCount) addEndEvent();
 
       return ret;
     };
@@ -45,19 +52,19 @@ const wrap = (orig, pluginName, smp, addEndEvent) => {
     return construcNamesToWrap.includes(origConstrucName);
   };
   const shouldWrap = getShouldWrap(orig);
-  const shouldSoftWrap = Object.values(orig).some(getShouldWrap);
+  const shouldSoftWrap = Object.keys(orig)
+    .map(k => orig[k])
+    .some(getShouldWrap);
 
   if (!shouldWrap && !shouldSoftWrap) {
-    const vanillaFunc =
-      typeof orig === "function" &&
-      orig &&
-      orig.prototype &&
-      orig.prototype.constructor !== orig;
+    const vanillaFunc = orig.name === "next";
     return vanillaFunc
       ? function() {
-          const ret = orig();
+          // do this before calling the callback, since the callback can start
+          // the next plugin step
           addEndEvent();
-          return ret;
+
+          return orig.apply(this, arguments);
         }
       : orig;
   }
