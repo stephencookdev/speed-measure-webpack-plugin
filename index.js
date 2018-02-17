@@ -137,6 +137,7 @@ module.exports = class SpeedMeasurePlugin {
         if (name) {
           this.addTimeEvent("loaders", "build", "start", {
             name,
+            fillLast: true,
             loaders: getLoaderNames(module.loaders),
             fillLast: true,
           });
