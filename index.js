@@ -1,6 +1,7 @@
+const path = require("path");
 const fs = require("fs");
 const { WrappedPlugin } = require("./WrappedPlugin");
-const { getModuleName, getLoaderNames } = require("./utils");
+const { getModuleName, getLoaderNames, prependLoader } = require("./utils");
 const {
   getHumanOutput,
   getMiscOutput,
@@ -8,6 +9,8 @@ const {
   getLoadersOutput,
 } = require("./output");
 const { stripColours } = require("./colours");
+
+const NS = path.dirname(fs.realpathSync(__filename));
 
 module.exports = class SpeedMeasurePlugin {
   constructor(options) {
@@ -20,18 +23,24 @@ module.exports = class SpeedMeasurePlugin {
     this.getOutput = this.getOutput.bind(this);
     this.addTimeEvent = this.addTimeEvent.bind(this);
     this.apply = this.apply.bind(this);
+    this.provideLoaderTiming = this.provideLoaderTiming.bind(this);
   }
 
   wrap(config) {
     if (this.options.disable) return config;
 
     config.plugins = (config.plugins || []).map(plugin => {
-      const pluginName = (plugin.constructor && plugin.constructor.name) ||
+      const pluginName =
+        (plugin.constructor && plugin.constructor.name) ||
         "(unable to deduce plugin name)";
       return new WrappedPlugin(plugin, pluginName, this);
     });
 
-    if(!this.smpPluginAdded) {
+    if (config.module && this.options.granularLoaderData) {
+      config.module = prependLoader(config.module);
+    }
+
+    if (!this.smpPluginAdded) {
       config.plugins = config.plugins.concat(this);
       this.smpPluginAdded = true;
     }
@@ -78,7 +87,7 @@ module.exports = class SpeedMeasurePlugin {
       const eventToModify =
         matchingEvent || (data.fillLast && eventList.find(e => !e.end));
       if (!eventToModify) {
-        console.log(
+        console.error(
           "Could not find a matching event to end",
           category,
           event,
@@ -119,6 +128,10 @@ module.exports = class SpeedMeasurePlugin {
     });
 
     compiler.plugin("compilation", compilation => {
+      compilation.plugin("normal-module-loader", loaderContext => {
+        loaderContext[NS] = this.provideLoaderTiming;
+      });
+
       compilation.plugin("build-module", module => {
         const name = getModuleName(module);
         if (name) {
@@ -140,5 +153,15 @@ module.exports = class SpeedMeasurePlugin {
         }
       });
     });
+  }
+
+  provideLoaderTiming(info) {
+    const infoData = { id: info.id };
+    if(info.type !== "end") {
+      infoData.loader = info.loaderName;
+      infoData.name = info.module;
+    }
+
+    this.addTimeEvent("loaders", "build-specific", info.type, infoData);
   }
 };

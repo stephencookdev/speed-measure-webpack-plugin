@@ -2,9 +2,9 @@ let idInc = 0;
 
 const genPluginMethod = (orig, pluginName, smp, type) =>
   function(method, func) {
+    const timeEventName = pluginName + "/" + type + "/" + method;
     const wrappedFunc = (...args) => {
       const id = idInc++;
-      const timeEventName = pluginName + "/" + type + "/" + method;
       // we don't know if there's going to be a callback applied to a particular
       // call, so we just set it multiple times, letting each one override the last
       let endCallCount = 0;

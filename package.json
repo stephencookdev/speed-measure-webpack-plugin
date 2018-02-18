@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Measure + analyse the speed of your webpack loaders and plugins",
   "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/stephencookdev/speed-measure-webpack-plugin.git"
@@ -24,6 +27,7 @@
     "webpack": "^3"
   },
   "devDependencies": {
+    "jest": "^22.3.0",
     "prettier": "1.10.2"
   }
 }
