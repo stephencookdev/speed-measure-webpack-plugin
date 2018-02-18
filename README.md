@@ -89,3 +89,17 @@ Type: `Boolean`<br>
 Default: `false`
 
 If truthy, this plugin does nothing at all. It is recommended to set this with something similar to `{ disable: !process.env.MEASURE }` to allow opt-in measurements with a `MEASURE=true npm run build`
+
+### `options.granularLoaderData` _(experimental)_
+
+Type: `Boolean`<br>
+Default: `false`
+
+If truthy, this plugin will attempt to break down the loader timing data to give per-loader timing information.
+
+Points of note that the following loaders will have inaccurate results in this mode:
+
+ * loaders using separate processes (e.g. `thread-loader`) - these make it difficult to get timing information on the subsequent loaders, as they're not attached to the main thread
+ * loaders emitting file output (e.g. `file-loader`) - the time taken in outputting the actual file is not included in the running time of the loader
+
+These are restrictions from technical limitations - ideally we would find solutions to these problems before removing the _(experimental)_ flag on this options

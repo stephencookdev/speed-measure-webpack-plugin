@@ -1,6 +1,6 @@
-const { appendLoader } = require("./utils");
+const { prependLoader } = require("./utils");
 
-describe("appendLoader", () => {
+describe("prependLoader", () => {
   const expectedMappings = [
     {
       name: "single loader",
@@ -10,7 +10,7 @@ describe("appendLoader", () => {
       },
       to: {
         test: /\.jsx?$/,
-        use: ["babel-loader", "speed-measure-webpack-plugin/loader"],
+        use: ["speed-measure-webpack-plugin/loader", "babel-loader"],
       },
     },
 
@@ -22,7 +22,7 @@ describe("appendLoader", () => {
       },
       to: {
         test: /\.jsx?$/,
-        use: ["babel-loader", "speed-measure-webpack-plugin/loader"],
+        use: ["speed-measure-webpack-plugin/loader", "babel-loader"],
       },
     },
 
@@ -36,8 +36,8 @@ describe("appendLoader", () => {
       to: {
         test: /\.jsx?$/,
         use: [
-          { loader: "babel-loader", options: {} },
           "speed-measure-webpack-plugin/loader",
+          { loader: "babel-loader", options: {} },
         ],
       },
     },
@@ -52,9 +52,9 @@ describe("appendLoader", () => {
       to: {
         test: /\.jsx?$/,
         use: [
+          "speed-measure-webpack-plugin/loader",
           { loader: "babel-loader", options: {} },
           "thread-loader",
-          "speed-measure-webpack-plugin/loader",
         ],
       },
     },
@@ -70,10 +70,10 @@ describe("appendLoader", () => {
         test: /\.jsx?$/,
         oneOf: [
           {
-            use: ["babel-loader", "speed-measure-webpack-plugin/loader"],
+            use: ["speed-measure-webpack-plugin/loader", "babel-loader"],
           },
           {
-            use: ["thread-loader", "speed-measure-webpack-plugin/loader"],
+            use: ["speed-measure-webpack-plugin/loader", "thread-loader"],
           },
         ],
       },
@@ -94,11 +94,11 @@ describe("appendLoader", () => {
       to: [
         {
           test: /\.jsx?$/,
-          use: ["babel-loader", "speed-measure-webpack-plugin/loader"],
+          use: ["speed-measure-webpack-plugin/loader", "babel-loader"],
         },
         {
           test: /\.css$/,
-          use: ["css-loader", "speed-measure-webpack-plugin/loader"],
+          use: ["speed-measure-webpack-plugin/loader", "css-loader"],
         },
       ],
     },
@@ -106,7 +106,7 @@ describe("appendLoader", () => {
 
   expectedMappings.forEach(mapping => {
     it('should create the expected mapping for "' + mapping.name + '"', () => {
-      expect(appendLoader(mapping.from)).toEqual(mapping.to);
+      expect(prependLoader(mapping.from)).toEqual(mapping.to);
     });
   });
 });

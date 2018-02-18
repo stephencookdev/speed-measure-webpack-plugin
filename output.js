@@ -67,28 +67,38 @@ module.exports.getHumanOutput = (outputObj, options = {}) => {
           fg(hT(loaderObj.activeTime), loaderObj.activeTime) +
           "\n";
 
+        let xEqualsY = [];
         if (options.verbose) {
-          output +=
-            "    median       = " + hT(loaderObj.averages.median) + ",\n";
-          output += "    mean         = " + hT(loaderObj.averages.mean) + ",\n";
+          xEqualsY.push(["median", hT(loaderObj.averages.median)]);
+          xEqualsY.push(["mean", hT(loaderObj.averages.mean)]);
           if (typeof loaderObj.averages.variance === "number")
-            output +=
-              "    s.d          = " +
-              hT(Math.sqrt(loaderObj.averages.variance)) +
-              ", \n";
-          output +=
-            "    range        = (" +
-            hT(loaderObj.averages.range.start) +
-            " --> " +
-            hT(loaderObj.averages.range.end) +
-            "), \n";
+            xEqualsY.push(["s.d.", hT(Math.sqrt(loaderObj.averages.variance))]);
+          xEqualsY.push([
+            "range",
+            "(" +
+              hT(loaderObj.averages.range.start) +
+              " --> " +
+              hT(loaderObj.averages.range.end) +
+              ")",
+          ]);
         }
 
-        output += "    module count = " + loaderObj.averages.dataPoints + "\n";
-        output +=
-          "    sub loaders  = " +
-          JSON.stringify(loaderObj.subLoadersTime) +
-          "\n";
+        if (loaderObj.loaders.length > 1) {
+          Object.keys(loaderObj.subLoadersTime).forEach(subLoader => {
+            xEqualsY.push([subLoader, hT(loaderObj.subLoadersTime[subLoader])]);
+          });
+        }
+
+        xEqualsY.push(["module count", loaderObj.averages.dataPoints]);
+
+        const maxXLength = xEqualsY.reduce(
+          (acc, cur) => Math.max(acc, cur[0].length),
+          0
+        );
+        xEqualsY.forEach(xY => {
+          const padEnd = maxXLength - xY[0].length;
+          output += "  " + xY[0] + " ".repeat(padEnd) + " = " + xY[1] + "\n";
+        });
       });
   }
 

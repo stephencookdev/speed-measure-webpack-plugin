@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const { hackWrapLoaders } = require("./utils");
 
 let id = 0;
 
@@ -13,51 +14,49 @@ const getLoaderName = path => {
 module.exports.pitch = function() {
   const callback = this[NS];
   const module = this.resourcePath;
+  const loaderPaths = this.loaders
+    .map(l => l.path)
+    .filter(l => !l.includes("speed-measure-webpack-plugin"));
 
-  // we can not have a NS attached to `this` if the loader is being called in
-  // a weird wrapped environment (such as how thread-loader runs)
-  if (!callback) return;
+  // Hack ourselves to overwrite the `require` method so we can override the
+  // loadLoaders
+  hackWrapLoaders(loaderPaths, (loader, path) => {
+    const loaderName = getLoaderName(path);
+    const wrapFunc = func =>
+      function() {
+        const loaderId = id++;
+        const almostThis = Object.assign({}, this, {
+          async: function() {
+            const asyncCallback = this.async.apply(this, arguments);
 
-  this.loaders.forEach(l => {
-    if (!l.normal) return;
+            return function() {
+              callback({
+                id: loaderId,
+                type: "end",
+              });
+              return asyncCallback.apply(this, arguments);
+            };
+          }.bind(this)
+        });
 
-    const loaderId = id++ + l.path;
-    const origNormalFunc = l.normal;
-    const loaderName = getLoaderName(l.path);
-    l.normal = function() {
-      const almostThis = Object.assign({}, this, {
-        async: function() {
-          const asyncCallback = this.async.apply(this, arguments);
+        callback({
+          module,
+          loaderName,
+          id: loaderId,
+          type: "start",
+        });
+        const ret = func.apply(almostThis, arguments);
+        callback({
+          id: loaderId,
+          type: "end",
+        });
+        return ret;
+      };
 
-          return function() {
-            callback({
-              module,
-              loaderName,
-              id: loaderId,
-              type: "end",
-            });
-            asyncCallback.apply(this, arguments);
-          };
-        }.bind(this),
-      });
-
-      callback({
-        module,
-        loaderName,
-        id: loaderId,
-        type: "start",
-      });
-
-      const ret = origNormalFunc.apply(almostThis, arguments);
-
-      callback({
-        module,
-        loaderName,
-        id: loaderId,
-        type: "end",
-      });
-
-      return ret;
-    };
+    if (loader.normal) loader.normal = wrapFunc(loader.normal);
+    if (loader.default) loader.default = wrapFunc(loader.default);
+    if (loader.pitch) loader.pitch = wrapFunc(loader.pitch);
+    if (typeof loader === "function") return wrapFunc(loader);
+    return loader;
   });
 };

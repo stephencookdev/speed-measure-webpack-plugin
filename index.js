@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const { WrappedPlugin } = require("./WrappedPlugin");
-const { getModuleName, getLoaderNames, appendLoader } = require("./utils");
+const { getModuleName, getLoaderNames, prependLoader } = require("./utils");
 const {
   getHumanOutput,
   getMiscOutput,
@@ -36,8 +36,8 @@ module.exports = class SpeedMeasurePlugin {
       return new WrappedPlugin(plugin, pluginName, this);
     });
 
-    if (config.module) {
-      config.module = appendLoader(config.module);
+    if (config.module && this.options.granularLoaderData) {
+      config.module = prependLoader(config.module);
     }
 
     if (!this.smpPluginAdded) {
@@ -139,7 +139,6 @@ module.exports = class SpeedMeasurePlugin {
             name,
             fillLast: true,
             loaders: getLoaderNames(module.loaders),
-            fillLast: true,
           });
         }
       });
@@ -157,10 +156,12 @@ module.exports = class SpeedMeasurePlugin {
   }
 
   provideLoaderTiming(info) {
-    this.addTimeEvent("loaders", "build-specific", info.type, {
-      loader: info.loaderName,
-      name: info.module,
-      id: info.id,
-    });
+    const infoData = { id: info.id };
+    if(info.type !== "end") {
+      infoData.loader = info.loaderName;
+      infoData.name = info.module;
+    }
+
+    this.addTimeEvent("loaders", "build-specific", info.type, infoData);
   }
 };

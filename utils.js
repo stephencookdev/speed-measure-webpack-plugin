@@ -84,9 +84,9 @@ module.exports.getTotalActiveTime = group => {
   return mergedRanges.reduce((acc, range) => acc + range.end - range.start, 0);
 };
 
-const appendLoader = rules => {
+const prependLoader = rules => {
   if (!rules) return rules;
-  if (Array.isArray(rules)) return rules.map(appendLoader);
+  if (Array.isArray(rules)) return rules.map(prependLoader);
 
   if (rules.loader) {
     rules.use = [rules.loader];
@@ -94,25 +94,45 @@ const appendLoader = rules => {
   }
 
   if (rules.use) {
-    rules.use.push("speed-measure-webpack-plugin/loader");
+    rules.use.unshift("speed-measure-webpack-plugin/loader");
   }
 
   if (rules.oneOf) {
-    rules.oneOf = appendLoader(rules.oneOf);
+    rules.oneOf = prependLoader(rules.oneOf);
   }
   if (rules.rules) {
-    rules.rules = appendLoader(rules.rules);
+    rules.rules = prependLoader(rules.rules);
   }
   if (Array.isArray(rules.resource)) {
-    rules.resource = appendLoader(rules.resource);
+    rules.resource = prependLoader(rules.resource);
   }
   if (rules.resource && rules.resource.and) {
-    rules.resource.and = appendLoader(rules.resource.and);
+    rules.resource.and = prependLoader(rules.resource.and);
   }
   if (rules.resource && rules.resource.or) {
-    rules.resource.or = appendLoader(rules.resource.or);
+    rules.resource.or = prependLoader(rules.resource.or);
   }
 
   return rules;
 };
-module.exports.appendLoader = appendLoader;
+module.exports.prependLoader = prependLoader;
+
+module.exports.hackWrapLoaders = (loaderPaths, callback) => {
+  const wrapReq = reqMethod => {
+    return function() {
+      const ret = reqMethod.apply(this, arguments);
+      if (loaderPaths.includes(arguments[0])) {
+        if(ret.__smpHacked) return ret;
+        ret.__smpHacked = true;
+        return callback(ret, arguments[0]);
+      }
+      return ret;
+    };
+  };
+
+  if (typeof System === "object" && typeof System.import === "function") {
+    System.import = wrapReq(System.import);
+  }
+  const Module = require("module");
+  Module.prototype.require = wrapReq(Module.prototype.require);
+};
