@@ -63,6 +63,13 @@ Options are (optionally) passed in to the constructor
 const smp = new SpeedMeasurePlugin(options);
 ```
 
+### `options.disable`
+
+Type: `Boolean`<br>
+Default: `false`
+
+If truthy, this plugin does nothing at all. It is recommended to set this with something similar to `{ disable: !process.env.MEASURE }` to allow opt-in measurements with a `MEASURE=true npm run build`
+
 ### `options.outputFormat`
 
 Type: `String|Function`<br>
@@ -83,12 +90,29 @@ Default: `console.log`
 * If a string, it specifies the path to a file to output to.
 * If a function, it will call the function with the output as the first parameter
 
-### `options.disable`
+### `options.pluginNames`
 
-Type: `Boolean`<br>
-Default: `false`
+Type: `Object`<br>
+Default: `{}`
 
-If truthy, this plugin does nothing at all. It is recommended to set this with something similar to `{ disable: !process.env.MEASURE }` to allow opt-in measurements with a `MEASURE=true npm run build`
+By default, SMP derives plugin names through `plugin.constructor.name`. For some
+plugins this doesn't work (or you may want to override this default). This option
+takes an object of `pluginName: PluginConstructor`, e.g.
+
+```javascript
+const uglify = new UglifyJSPlugin();
+const smp = new SpeedMeasurePlugin({
+  pluginNames: {
+    customUglifyName: uglify
+  }
+});
+
+const webpackConfig = smp.wrap({
+  plugins: [
+    uglify
+  ]
+});
+```
 
 ### `options.granularLoaderData` _(experimental)_
 

@@ -23,8 +23,7 @@
     "node": ">=6.0.0"
   },
   "peerDependencies": {
-    "loader-runner": "^2",
-    "webpack": "^3"
+    "webpack": "^1"
   },
   "devDependencies": {
     "jest": "^22.3.0",

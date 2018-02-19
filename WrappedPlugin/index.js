@@ -7,25 +7,27 @@ const genPluginMethod = (orig, pluginName, smp, type) =>
       const id = idInc++;
       // we don't know if there's going to be a callback applied to a particular
       // call, so we just set it multiple times, letting each one override the last
-      let endCallCount = 0;
-      const addEndEvent = () => {
-        endCallCount++;
-        smp.addTimeEvent("plugins", timeEventName, "end", { id });
-      };
+      const addEndEvent = () =>
+        smp.addTimeEvent("plugins", timeEventName, "end", {
+          id,
+          // we need to allow failure, since webpack can finish compilation and
+          // cause our callbacks to fall on deaf ears
+          allowFailure: true,
+        });
 
       smp.addTimeEvent("plugins", timeEventName, "start", {
         id,
         name: pluginName,
       });
+      // invoke an end event immediately in case the callback here causes webpack
+      // to complete compilation. If this gets invoked and not the subsequent
+      // call, then our data will be inaccurate, sadly
+      addEndEvent();
       const ret = func.apply(
         this,
         args.map(a => wrap(a, pluginName, smp, addEndEvent))
       );
-
-      // If the end event was invoked as a callback immediately, we can
-      // don't want to add another end event here (and it can actually cause
-      // errors, if webpack has finished compilation entirely)
-      if (!endCallCount) addEndEvent();
+      addEndEvent();
 
       return ret;
     };

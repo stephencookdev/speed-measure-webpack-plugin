@@ -31,6 +31,9 @@ module.exports = class SpeedMeasurePlugin {
 
     config.plugins = (config.plugins || []).map(plugin => {
       const pluginName =
+        Object.keys(this.options.pluginNames || {}).find(
+          pluginName => plugin === this.options.pluginNames[pluginName]
+        ) ||
         (plugin.constructor && plugin.constructor.name) ||
         "(unable to deduce plugin name)";
       return new WrappedPlugin(plugin, pluginName, this);
@@ -67,6 +70,9 @@ module.exports = class SpeedMeasurePlugin {
   }
 
   addTimeEvent(category, event, eventType, data = {}) {
+    const allowFailure = data.allowFailure;
+    delete data.allowFailure;
+
     const tED = this.timeEventData;
     if (!tED[category]) tED[category] = {};
     if (!tED[category][event]) tED[category][event] = [];
@@ -93,6 +99,7 @@ module.exports = class SpeedMeasurePlugin {
           event,
           data
         );
+        if (allowFailure) return;
         throw new Error("No matching event!");
       }
 
@@ -157,7 +164,7 @@ module.exports = class SpeedMeasurePlugin {
 
   provideLoaderTiming(info) {
     const infoData = { id: info.id };
-    if(info.type !== "end") {
+    if (info.type !== "end") {
       infoData.loader = info.loaderName;
       infoData.name = info.module;
     }
