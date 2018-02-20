@@ -25,6 +25,10 @@ or
 yarn add speed-measure-webpack-plugin
 ```
 
+## Migrating
+
+SMP follows [semver](https://semver.org/). If upgrading a major version, you can consult [the migration guide](./migration.md).
+
 ## Usage
 
 Change your webpack config from
