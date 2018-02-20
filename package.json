@@ -28,5 +28,8 @@
   "devDependencies": {
     "jest": "^22.3.0",
     "prettier": "1.10.2"
+  },
+  "dependencies": {
+    "chalk": "^2.0.1"
   }
 }

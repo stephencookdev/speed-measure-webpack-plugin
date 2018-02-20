@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const chalk = require("chalk");
 const { WrappedPlugin } = require("./WrappedPlugin");
 const { getModuleName, getLoaderNames, prependLoader } = require("./utils");
 const {
@@ -7,8 +8,8 @@ const {
   getMiscOutput,
   getPluginsOutput,
   getLoadersOutput,
+  smpTag,
 } = require("./output");
-const { stripColours } = require("./colours");
 
 const NS = path.dirname(fs.realpathSync(__filename));
 
@@ -116,15 +117,19 @@ module.exports = class SpeedMeasurePlugin {
     compiler.plugin("done", () => {
       this.addTimeEvent("misc", "compile", "end", { fillLast: true });
 
+      const outputToFile = typeof this.options.outputTarget === "string";
+      chalk.enabled = !outputToFile;
       const output = this.getOutput();
-      if (typeof this.options.outputTarget === "string") {
-        const strippedOutput = stripColours(output);
+      chalk.enabled = true;
+      if (outputToFile) {
         const writeMethod = fs.existsSync(this.options.outputTarget)
           ? fs.appendFile
           : fs.writeFile;
-        writeMethod(this.options.outputTarget, strippedOutput + "\n", err => {
+        writeMethod(this.options.outputTarget, output + "\n", err => {
           if (err) throw err;
-          console.log("Outputted timing info to " + this.options.outputTarget);
+          console.log(
+            smpTag() + "Outputted timing info to " + this.options.outputTarget
+          );
         });
       } else {
         const outputFunc = this.options.outputTarget || console.log;

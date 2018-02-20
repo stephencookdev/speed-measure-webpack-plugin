@@ -1,6 +1,7 @@
 const MS_IN_MINUTE = 60000;
 const MS_IN_SECOND = 1000;
 
+const chalk = require("chalk");
 const { fg, bg } = require("./colours");
 const { groupBy, getAverages, getTotalActiveTime } = require("./utils");
 
@@ -30,10 +31,12 @@ const humanTime = (ms, options = {}) => {
   return time;
 };
 
+const smpTag = () => bg(" SMP ") + " ⏱  ";
+module.exports.smpTag = smpTag;
+
 module.exports.getHumanOutput = (outputObj, options = {}) => {
   const hT = x => humanTime(x, options);
-  const smpTag = bg(" SMP ") + " ⏱ ";
-  let output = "\n\n" + smpTag + "\n";
+  let output = "\n\n" + smpTag() + "\n";
 
   if (outputObj.misc) {
     output +=
@@ -42,14 +45,14 @@ module.exports.getHumanOutput = (outputObj, options = {}) => {
     output += "\n\n";
   }
   if (outputObj.plugins) {
-    output += smpTag + " Plugins\n";
+    output += smpTag() + "Plugins\n";
     Object.keys(outputObj.plugins)
       .sort(
         (name1, name2) => outputObj.plugins[name2] - outputObj.plugins[name1]
       )
       .forEach(pluginName => {
         output +=
-          fg(pluginName) +
+          chalk.bold(pluginName) +
           " took " +
           fg(hT(outputObj.plugins[pluginName]), outputObj.plugins[pluginName]);
         output += "\n";
@@ -57,7 +60,7 @@ module.exports.getHumanOutput = (outputObj, options = {}) => {
     output += "\n";
   }
   if (outputObj.loaders) {
-    output += smpTag + " Loaders\n";
+    output += smpTag() + "Loaders\n";
     outputObj.loaders.build
       .sort((obj1, obj2) => obj2.activeTime - obj1.activeTime)
       .forEach(loaderObj => {
