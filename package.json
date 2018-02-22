@@ -1,8 +1,11 @@
 {
   "name": "speed-measure-webpack-plugin",
-  "version": "0.3.3",
+  "version": "1.0.0",
   "description": "Measure + analyse the speed of your webpack loaders and plugins",
   "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/stephencookdev/speed-measure-webpack-plugin.git"
@@ -11,7 +14,7 @@
     "name": "Stephen Cook",
     "email": "stephen@stephencookdev.co.uk"
   },
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/stephencookdev/speed-measure-webpack-plugin/issues"
   },
@@ -20,9 +23,13 @@
     "node": ">=6.0.0"
   },
   "peerDependencies": {
-    "webpack": "^3"
+    "webpack": "^1"
   },
   "devDependencies": {
+    "jest": "^22.3.0",
     "prettier": "1.10.2"
+  },
+  "dependencies": {
+    "chalk": "^2.0.1"
   }
 }

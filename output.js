@@ -1,6 +1,7 @@
 const MS_IN_MINUTE = 60000;
 const MS_IN_SECOND = 1000;
 
+const chalk = require("chalk");
 const { fg, bg } = require("./colours");
 const { groupBy, getAverages, getTotalActiveTime } = require("./utils");
 
@@ -24,16 +25,18 @@ const humanTime = (ms, options = {}) => {
 
   let time = "";
 
-  if (minutes > 0) time += minutes + " mins, ";
+  if (minutes > 0) time += minutes + " min" + (minutes > 1 ? "s" : "") + ", ";
   time += seconds + " secs";
 
   return time;
 };
 
+const smpTag = () => bg(" SMP ") + " ⏱  ";
+module.exports.smpTag = smpTag;
+
 module.exports.getHumanOutput = (outputObj, options = {}) => {
   const hT = x => humanTime(x, options);
-  const smpTag = bg(" SMP ") + " ⏱ ";
-  let output = "\n\n" + smpTag + "\n";
+  let output = "\n\n" + smpTag() + "\n";
 
   if (outputObj.misc) {
     output +=
@@ -42,14 +45,14 @@ module.exports.getHumanOutput = (outputObj, options = {}) => {
     output += "\n\n";
   }
   if (outputObj.plugins) {
-    output += smpTag + " Plugins\n";
+    output += smpTag() + "Plugins\n";
     Object.keys(outputObj.plugins)
       .sort(
         (name1, name2) => outputObj.plugins[name2] - outputObj.plugins[name1]
       )
       .forEach(pluginName => {
         output +=
-          fg(pluginName) +
+          chalk.bold(pluginName) +
           " took " +
           fg(hT(outputObj.plugins[pluginName]), outputObj.plugins[pluginName]);
         output += "\n";
@@ -57,7 +60,7 @@ module.exports.getHumanOutput = (outputObj, options = {}) => {
     output += "\n";
   }
   if (outputObj.loaders) {
-    output += smpTag + " Loaders\n";
+    output += smpTag() + "Loaders\n";
     outputObj.loaders.build
       .sort((obj1, obj2) => obj2.activeTime - obj1.activeTime)
       .forEach(loaderObj => {
@@ -67,24 +70,38 @@ module.exports.getHumanOutput = (outputObj, options = {}) => {
           fg(hT(loaderObj.activeTime), loaderObj.activeTime) +
           "\n";
 
+        let xEqualsY = [];
         if (options.verbose) {
-          output +=
-            "    median       = " + hT(loaderObj.averages.median) + ",\n";
-          output += "    mean         = " + hT(loaderObj.averages.mean) + ",\n";
+          xEqualsY.push(["median", hT(loaderObj.averages.median)]);
+          xEqualsY.push(["mean", hT(loaderObj.averages.mean)]);
           if (typeof loaderObj.averages.variance === "number")
-            output +=
-              "    s.d          = " +
-              hT(Math.sqrt(loaderObj.averages.variance)) +
-              ", \n";
-          output +=
-            "    range        = (" +
-            hT(loaderObj.averages.range.start) +
-            " --> " +
-            hT(loaderObj.averages.range.end) +
-            "), \n";
+            xEqualsY.push(["s.d.", hT(Math.sqrt(loaderObj.averages.variance))]);
+          xEqualsY.push([
+            "range",
+            "(" +
+              hT(loaderObj.averages.range.start) +
+              " --> " +
+              hT(loaderObj.averages.range.end) +
+              ")",
+          ]);
         }
 
-        output += "    module count = " + loaderObj.averages.dataPoints + "\n";
+        if (loaderObj.loaders.length > 1) {
+          Object.keys(loaderObj.subLoadersTime).forEach(subLoader => {
+            xEqualsY.push([subLoader, hT(loaderObj.subLoadersTime[subLoader])]);
+          });
+        }
+
+        xEqualsY.push(["module count", loaderObj.averages.dataPoints]);
+
+        const maxXLength = xEqualsY.reduce(
+          (acc, cur) => Math.max(acc, cur[0].length),
+          0
+        );
+        xEqualsY.forEach(xY => {
+          const padEnd = maxXLength - xY[0].length;
+          output += "  " + xY[0] + " ".repeat(padEnd) + " = " + xY[1] + "\n";
+        });
       });
   }
 
@@ -100,6 +117,7 @@ module.exports.getMiscOutput = data => ({
 module.exports.getPluginsOutput = data =>
   Object.keys(data).reduce((acc, key) => {
     const inData = data[key];
+
     const startEndsByName = groupBy("name", inData);
 
     return startEndsByName.reduce((innerAcc, startEnds) => {
@@ -109,20 +127,29 @@ module.exports.getPluginsOutput = data =>
     }, acc);
   }, {});
 
-module.exports.getLoadersOutput = data =>
-  Object.keys(data).reduce((acc, key) => {
-    const startEndsByLoader = groupBy("loaders", data[key]);
+module.exports.getLoadersOutput = data => {
+  const startEndsByLoader = groupBy("loaders", data.build);
+  const allSubLoaders = data["build-specific"] || [];
 
-    acc[key] = startEndsByLoader.map(startEnds => {
-      const averages = getAverages(startEnds);
-      const activeTime = getTotalActiveTime(startEnds);
+  const buildData = startEndsByLoader.map(startEnds => {
+    const averages = getAverages(startEnds);
+    const activeTime = getTotalActiveTime(startEnds);
+    const subLoaders = groupBy(
+      "loader",
+      allSubLoaders.filter(l => startEnds.find(x => x.name === l.name))
+    );
+    const subLoadersActiveTime = subLoaders.reduce((acc, loaders) => {
+      acc[loaders[0].loader] = getTotalActiveTime(loaders);
+      return acc;
+    }, {});
 
-      return {
-        averages,
-        activeTime,
-        loaders: startEnds[0].loaders,
-      };
-    });
+    return {
+      averages,
+      activeTime,
+      loaders: startEnds[0].loaders,
+      subLoadersTime: subLoadersActiveTime,
+    };
+  });
 
-    return acc;
-  }, {});
+  return { build: buildData };
+};

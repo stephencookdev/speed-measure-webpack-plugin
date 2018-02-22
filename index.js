@@ -1,49 +1,55 @@
+const path = require("path");
 const fs = require("fs");
+const chalk = require("chalk");
 const { WrappedPlugin } = require("./WrappedPlugin");
-const { getModuleName, getLoaderNames } = require("./utils");
+const { getModuleName, getLoaderNames, prependLoader } = require("./utils");
 const {
   getHumanOutput,
   getMiscOutput,
   getPluginsOutput,
   getLoadersOutput,
+  smpTag,
 } = require("./output");
-const { stripColours } = require("./colours");
+
+const NS = path.dirname(fs.realpathSync(__filename));
 
 module.exports = class SpeedMeasurePlugin {
   constructor(options) {
     this.options = options || {};
 
     this.timeEventData = {};
+    this.smpPluginAdded = false;
 
-    this.wrapPlugins = this.wrapPlugins.bind(this);
+    this.wrap = this.wrap.bind(this);
     this.getOutput = this.getOutput.bind(this);
     this.addTimeEvent = this.addTimeEvent.bind(this);
     this.apply = this.apply.bind(this);
+    this.provideLoaderTiming = this.provideLoaderTiming.bind(this);
   }
 
-  static wrapPlugins(plugins, options) {
-    if (options.disable) return Object.keys(plugins).map(k => plugins[k]);
+  wrap(config) {
+    if (this.options.disable) return config;
 
-    const smp = new SpeedMeasurePlugin(options);
+    config.plugins = (config.plugins || []).map(plugin => {
+      const pluginName =
+        Object.keys(this.options.pluginNames || {}).find(
+          pluginName => plugin === this.options.pluginNames[pluginName]
+        ) ||
+        (plugin.constructor && plugin.constructor.name) ||
+        "(unable to deduce plugin name)";
+      return new WrappedPlugin(plugin, pluginName, this);
+    });
 
-    const wrappedPlugins = smp.wrapPlugins(plugins);
-
-    return wrappedPlugins.concat(smp);
-  }
-
-  wrapPlugins(plugins) {
-    if (Array.isArray(plugins)) {
-      let i = 1;
-      plugins = plugins.reduce((acc, p) => {
-        acc["plugin " + i++] = p;
-        return acc;
-      });
+    if (config.module && this.options.granularLoaderData) {
+      config.module = prependLoader(config.module);
     }
-    plugins = plugins || {};
 
-    return Object.keys(plugins).map(
-      pluginName => new WrappedPlugin(plugins[pluginName], pluginName, this)
-    );
+    if (!this.smpPluginAdded) {
+      config.plugins = config.plugins.concat(this);
+      this.smpPluginAdded = true;
+    }
+
+    return config;
   }
 
   getOutput() {
@@ -65,6 +71,9 @@ module.exports = class SpeedMeasurePlugin {
   }
 
   addTimeEvent(category, event, eventType, data = {}) {
+    const allowFailure = data.allowFailure;
+    delete data.allowFailure;
+
     const tED = this.timeEventData;
     if (!tED[category]) tED[category] = {};
     if (!tED[category][event]) tED[category][event] = [];
@@ -85,12 +94,13 @@ module.exports = class SpeedMeasurePlugin {
       const eventToModify =
         matchingEvent || (data.fillLast && eventList.find(e => !e.end));
       if (!eventToModify) {
-        console.log(
+        console.error(
           "Could not find a matching event to end",
           category,
           event,
           data
         );
+        if (allowFailure) return;
         throw new Error("No matching event!");
       }
 
@@ -107,15 +117,19 @@ module.exports = class SpeedMeasurePlugin {
     compiler.plugin("done", () => {
       this.addTimeEvent("misc", "compile", "end", { fillLast: true });
 
+      const outputToFile = typeof this.options.outputTarget === "string";
+      chalk.enabled = !outputToFile;
       const output = this.getOutput();
-      if (typeof this.options.outputTarget === "string") {
-        const strippedOutput = stripColours(output);
+      chalk.enabled = true;
+      if (outputToFile) {
         const writeMethod = fs.existsSync(this.options.outputTarget)
           ? fs.appendFile
           : fs.writeFile;
-        writeMethod(this.options.outputTarget, strippedOutput + "\n", err => {
+        writeMethod(this.options.outputTarget, output + "\n", err => {
           if (err) throw err;
-          console.log("Outputted timing info to " + this.options.outputTarget);
+          console.log(
+            smpTag() + "Outputted timing info to " + this.options.outputTarget
+          );
         });
       } else {
         const outputFunc = this.options.outputTarget || console.log;
@@ -126,6 +140,10 @@ module.exports = class SpeedMeasurePlugin {
     });
 
     compiler.plugin("compilation", compilation => {
+      compilation.plugin("normal-module-loader", loaderContext => {
+        loaderContext[NS] = this.provideLoaderTiming;
+      });
+
       compilation.plugin("build-module", module => {
         const name = getModuleName(module);
         if (name) {
@@ -147,5 +165,15 @@ module.exports = class SpeedMeasurePlugin {
         }
       });
     });
+  }
+
+  provideLoaderTiming(info) {
+    const infoData = { id: info.id };
+    if (info.type !== "end") {
+      infoData.loader = info.loaderName;
+      infoData.name = info.module;
+    }
+
+    this.addTimeEvent("loaders", "build-specific", info.type, infoData);
   }
 };

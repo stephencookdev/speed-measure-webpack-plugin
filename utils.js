@@ -49,13 +49,14 @@ module.exports.getModuleName = module => module.userRequest;
 module.exports.getLoaderNames = loaders =>
   loaders && loaders.length
     ? loaders
-        .map(l => l.loader)
+        .map(l => l.loader || l)
         .map(l => l.replace(/^.*\/node_modules\/([^\/]+).*$/, (_, m) => m))
-    : ["(none)"];
+        .filter(l => !l.includes("speed-measure-webpack-plugin"))
+    : ["modules with no loaders"];
 
 module.exports.groupBy = (key, arr) => {
   const groups = [];
-  arr.forEach(arrItem => {
+  (arr || []).forEach(arrItem => {
     const groupItem = groups.find(poss => isEqual(poss[0][key], arrItem[key]));
     if (groupItem) groupItem.push(arrItem);
     else groups.push([arrItem]);
@@ -81,4 +82,57 @@ module.exports.getAverages = group => {
 module.exports.getTotalActiveTime = group => {
   const mergedRanges = mergeRanges(group);
   return mergedRanges.reduce((acc, range) => acc + range.end - range.start, 0);
+};
+
+const prependLoader = rules => {
+  if (!rules) return rules;
+  if (Array.isArray(rules)) return rules.map(prependLoader);
+
+  if (rules.loader) {
+    rules.use = [rules.loader];
+    delete rules.loader;
+  }
+
+  if (rules.use) {
+    rules.use.unshift("speed-measure-webpack-plugin/loader");
+  }
+
+  if (rules.oneOf) {
+    rules.oneOf = prependLoader(rules.oneOf);
+  }
+  if (rules.rules) {
+    rules.rules = prependLoader(rules.rules);
+  }
+  if (Array.isArray(rules.resource)) {
+    rules.resource = prependLoader(rules.resource);
+  }
+  if (rules.resource && rules.resource.and) {
+    rules.resource.and = prependLoader(rules.resource.and);
+  }
+  if (rules.resource && rules.resource.or) {
+    rules.resource.or = prependLoader(rules.resource.or);
+  }
+
+  return rules;
+};
+module.exports.prependLoader = prependLoader;
+
+module.exports.hackWrapLoaders = (loaderPaths, callback) => {
+  const wrapReq = reqMethod => {
+    return function() {
+      const ret = reqMethod.apply(this, arguments);
+      if (loaderPaths.includes(arguments[0])) {
+        if(ret.__smpHacked) return ret;
+        ret.__smpHacked = true;
+        return callback(ret, arguments[0]);
+      }
+      return ret;
+    };
+  };
+
+  if (typeof System === "object" && typeof System.import === "function") {
+    System.import = wrapReq(System.import);
+  }
+  const Module = require("module");
+  Module.prototype.require = wrapReq(Module.prototype.require);
 };
