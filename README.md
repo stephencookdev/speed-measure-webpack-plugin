@@ -16,18 +16,22 @@ This plugin measures your webpack build speed, giving an output like this:
 ## Install
 
 ```bash
-npm install --save speed-measure-webpack-plugin
+npm install --save-dev speed-measure-webpack-plugin
 ```
 
 or
 
 ```bash
-yarn add speed-measure-webpack-plugin
+yarn add -D speed-measure-webpack-plugin
 ```
 
 ## Migrating
 
 SMP follows [semver](https://semver.org/). If upgrading a major version, you can consult [the migration guide](./migration.md).
+
+## Requirements
+
+SMP requires at least Node v6.
 
 ## Usage
 
@@ -131,3 +135,7 @@ Points of note that the following loaders will have inaccurate results in this m
  * loaders emitting file output (e.g. `file-loader`) - the time taken in outputting the actual file is not included in the running time of the loader
 
 These are restrictions from technical limitations - ideally we would find solutions to these problems before removing the _(experimental)_ flag on this options
+
+## License
+
+[MIT](/LICENSE)

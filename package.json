@@ -14,7 +14,7 @@
     "name": "Stephen Cook",
     "email": "stephen@stephencookdev.co.uk"
   },
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/stephencookdev/speed-measure-webpack-plugin/issues"
   },
