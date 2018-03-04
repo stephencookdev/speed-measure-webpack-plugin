@@ -61,7 +61,9 @@ const webpackConfig = smp.wrap({
 });
 ```
 
-and you're done! SMP will now be printing timing output to the console by default
+and you're done! SMP will now be printing timing output to the console by default.
+
+Check out the [examples folder](/examples) for some more examples.
 
 ## Options
 
