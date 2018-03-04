@@ -103,6 +103,22 @@ module.exports.WrappedPlugin = class WrappedPlugin {
     this._smp = smp;
 
     this.apply = this.apply.bind(this);
+
+    const wp = this;
+    return new Proxy(plugin, {
+      get(target, property) {
+        if (property === "apply") {
+          return wp.apply;
+        }
+        return target[property];
+      },
+      set: (target, property, value) => {
+        return Reflect.set(target, property, value);
+      },
+      deleteProperty: (target, property) => {
+        return Reflect.deleteProperty(target, property);
+      },
+    });
   }
 
   apply(compiler) {

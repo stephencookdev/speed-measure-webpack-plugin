@@ -94,6 +94,7 @@ const prependLoader = rules => {
   }
 
   if (rules.use) {
+    if (!Array.isArray(rules.use)) rules.use = [rules.use];
     rules.use.unshift("speed-measure-webpack-plugin/loader");
   }
 
@@ -122,7 +123,7 @@ module.exports.hackWrapLoaders = (loaderPaths, callback) => {
     return function() {
       const ret = reqMethod.apply(this, arguments);
       if (loaderPaths.includes(arguments[0])) {
-        if(ret.__smpHacked) return ret;
+        if (ret.__smpHacked) return ret;
         ret.__smpHacked = true;
         return callback(ret, arguments[0]);
       }
