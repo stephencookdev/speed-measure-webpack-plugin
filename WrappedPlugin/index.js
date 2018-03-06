@@ -81,8 +81,12 @@ const wrap = (orig, pluginName, smp, addEndEvent) => {
           getOrigConstrucName(target)
         ).bind(proxy);
 
-      if (typeof orig[property] === "function")
-        return orig[property].bind(proxy);
+      if (typeof orig[property] === "function") {
+        const ret = orig[property].bind(proxy);
+        if (property === "constructor")
+          Object.defineProperty(ret, "name", { value: orig.constructor.name });
+        return ret;
+      }
       return wrap(orig[property], pluginName, smp);
     },
     set: (target, property, value) => {
