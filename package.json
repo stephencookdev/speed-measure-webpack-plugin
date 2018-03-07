@@ -4,7 +4,8 @@
   "description": "Measure + analyse the speed of your webpack loaders and plugins",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "functional-test": "lerna bootstrap && lerna run prepare && lerna run test && lerna run cleanup"
   },
   "repository": {
     "type": "git",
@@ -26,7 +27,8 @@
     "webpack": "^1 || ^2 || ^3"
   },
   "devDependencies": {
-    "jest": "^22.3.0",
+    "jest": "^22.4.2",
+    "lerna": "^2.9.0",
     "prettier": "1.10.2"
   },
   "dependencies": {

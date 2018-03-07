@@ -1,0 +1,22 @@
+{
+  "name": "v3-hard-source-webpack-plugin",
+  "version": "0.0.1",
+  "description": "Test webpack v3, and HardSourceWebpackPlugin with SMP",
+  "scripts": {
+    "prepare": "cp -r ../../common/* .",
+    "test": "jest ./smp.test.js",
+    "cleanup": "rm -rf dist && rm -rf node_modules/.cache"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "devDependencies": {
+    "babel-loader": "^7.1.1",
+    "css-loader": "^0.28.10",
+    "hard-source-webpack-plugin": "^0.6.4",
+    "jest": "^22.3.0",
+    "style-loader": "^0.20.2",
+    "webpack": "3.x.x"
+  }
+}
