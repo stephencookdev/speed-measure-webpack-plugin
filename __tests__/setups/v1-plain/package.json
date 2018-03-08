@@ -1,0 +1,21 @@
+{
+  "name": "v1-plain",
+  "version": "0.0.1",
+  "description": "Test webpack v1 with SMP",
+  "scripts": {
+    "prepare": "cp -r ../../common/* .",
+    "test": "jest ./smp.test.js",
+    "cleanup": "rm -rf dist"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "devDependencies": {
+    "babel-loader": "7.0.x",
+    "css-loader": "^0.28.10",
+    "jest": "^22.3.0",
+    "style-loader": "^0.20.2",
+    "webpack": "1.x.x"
+  }
+}
