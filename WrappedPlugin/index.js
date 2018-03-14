@@ -45,7 +45,8 @@ const construcNamesToWrap = [
 ];
 
 const wrap = (orig, pluginName, smp, addEndEvent) => {
-  if (!orig) return orig;
+  if (!orig || orig._smpWrapped) return orig;
+  orig._smpWrapped = true;
 
   const getOrigConstrucName = target =>
     target && target.constructor && target.constructor.name;
