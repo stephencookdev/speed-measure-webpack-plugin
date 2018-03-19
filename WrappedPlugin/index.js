@@ -44,9 +44,13 @@ const construcNamesToWrap = [
   "ContextModuleFactory",
 ];
 
+const wrappedObjs = [];
 const wrap = (orig, pluginName, smp, addEndEvent) => {
-  if (!orig || orig._smpWrapped) return orig;
-  orig._smpWrapped = true;
+  if (!orig) return orig;
+  const prevWrapped = wrappedObjs.find(
+    w => w.pluginName === pluginName && (w.orig === orig || w.wrapped === orig)
+  );
+  if (prevWrapped) return prevWrapped.wrapped;
 
   const getOrigConstrucName = target =>
     target && target.constructor && target.constructor.name;
@@ -59,9 +63,11 @@ const wrap = (orig, pluginName, smp, addEndEvent) => {
     .map(k => orig[k])
     .some(getShouldWrap);
 
+  let wrappedReturn;
+
   if (!shouldWrap && !shouldSoftWrap) {
     const vanillaFunc = orig.name === "next";
-    return vanillaFunc
+    wrappedReturn = vanillaFunc
       ? function() {
           // do this before calling the callback, since the callback can start
           // the next plugin step
@@ -70,35 +76,41 @@ const wrap = (orig, pluginName, smp, addEndEvent) => {
           return orig.apply(this, arguments);
         }
       : orig;
+  } else {
+    const proxy = new Proxy(orig, {
+      get: (target, property) => {
+        if (shouldWrap && property === "plugin")
+          return genPluginMethod(
+            target,
+            pluginName,
+            smp,
+            getOrigConstrucName(target)
+          ).bind(proxy);
+
+        if (typeof target[property] === "function") {
+          const ret = target[property].bind(proxy);
+          if (property === "constructor")
+            Object.defineProperty(ret, "name", {
+              value: target.constructor.name,
+            });
+          return ret;
+        }
+
+        return target[property];
+      },
+      set: (target, property, value) => {
+        return Reflect.set(target, property, value);
+      },
+      deleteProperty: (target, property) => {
+        return Reflect.deleteProperty(target, property);
+      },
+    });
+
+    wrappedReturn = proxy;
   }
 
-  const proxy = new Proxy(orig, {
-    get: (target, property) => {
-      if (shouldWrap && property === "plugin")
-        return genPluginMethod(
-          orig,
-          pluginName,
-          smp,
-          getOrigConstrucName(target)
-        ).bind(proxy);
-
-      if (typeof orig[property] === "function") {
-        const ret = orig[property].bind(proxy);
-        if (property === "constructor")
-          Object.defineProperty(ret, "name", { value: orig.constructor.name });
-        return ret;
-      }
-      return wrap(orig[property], pluginName, smp);
-    },
-    set: (target, property, value) => {
-      return Reflect.set(target, property, value);
-    },
-    deleteProperty: (target, property) => {
-      return Reflect.deleteProperty(target, property);
-    },
-  });
-
-  return proxy;
+  wrappedObjs.push({ pluginName, orig, wrapped: wrappedReturn });
+  return wrappedReturn;
 };
 
 module.exports.WrappedPlugin = class WrappedPlugin {
