@@ -1,7 +1,7 @@
 {
-  "name": "v3-stats",
+  "name": "v4-plain",
   "version": "0.0.1",
-  "description": "Test webpack v3 with a StatsPlugin set-up with SMP",
+  "description": "Test webpack v4 with SMP",
   "scripts": {
     "prepare": "cp -r ../../common/* .",
     "test": "jest ./smp.test.js",
@@ -12,11 +12,10 @@
     "node": ">=6.0.0"
   },
   "devDependencies": {
-    "babel-loader": "^7.1.1",
-    "css-loader": "^0.28.10",
+    "babel-loader": "^7.1.4",
+    "css-loader": "^0.28.11",
     "jest": "^22.3.0",
-    "stats-webpack-plugin": "^0.6.2",
-    "style-loader": "^0.20.2",
-    "webpack": "3.x.x"
+    "style-loader": "^0.20.3",
+    "webpack": "^4.2.0"
   }
 }

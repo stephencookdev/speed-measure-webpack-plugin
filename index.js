@@ -2,7 +2,12 @@ const path = require("path");
 const fs = require("fs");
 const chalk = require("chalk");
 const { WrappedPlugin } = require("./WrappedPlugin");
-const { getModuleName, getLoaderNames, prependLoader } = require("./utils");
+const {
+  getModuleName,
+  getLoaderNames,
+  prependLoader,
+  tap,
+} = require("./utils");
 const {
   getHumanOutput,
   getMiscOutput,
@@ -111,10 +116,10 @@ module.exports = class SpeedMeasurePlugin {
   apply(compiler) {
     if (this.options.disable) return;
 
-    compiler.plugin("compile", () => {
+    tap(compiler, "compile", () => {
       this.addTimeEvent("misc", "compile", "start", { watch: false });
     });
-    compiler.plugin("done", () => {
+    tap(compiler, "done", () => {
       this.addTimeEvent("misc", "compile", "end", { fillLast: true });
 
       const outputToFile = typeof this.options.outputTarget === "string";
@@ -139,12 +144,12 @@ module.exports = class SpeedMeasurePlugin {
       this.timeEventData = {};
     });
 
-    compiler.plugin("compilation", compilation => {
-      compilation.plugin("normal-module-loader", loaderContext => {
+    tap(compiler, "compilation", compilation => {
+      tap(compilation, "normal-module-loader", loaderContext => {
         loaderContext[NS] = this.provideLoaderTiming;
       });
 
-      compilation.plugin("build-module", module => {
+      tap(compilation, "build-module", module => {
         const name = getModuleName(module);
         if (name) {
           this.addTimeEvent("loaders", "build", "start", {
@@ -155,7 +160,7 @@ module.exports = class SpeedMeasurePlugin {
         }
       });
 
-      compilation.plugin("succeed-module", module => {
+      tap(compilation, "succeed-module", module => {
         const name = getModuleName(module);
         if (name) {
           this.addTimeEvent("loaders", "build", "end", {
