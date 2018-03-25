@@ -20,6 +20,8 @@ const runWebpack = config =>
     });
   });
 
+jest.setTimeout(20000);
+
 describe("smp - " + __dirname.split("/").pop(), () => {
   let distApp;
   beforeAll(() => runWebpack(webpackConfig).then(file => (distApp = file)));
