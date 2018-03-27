@@ -35,7 +35,7 @@ SMP follows [semver](https://semver.org/). If upgrading a major version, you can
 
 ## Requirements
 
-SMP requires at least Node v6.
+SMP requires at least **Node v6**. But otherwise, accepts **all webpack** versions (1, 2, 3, and 4).
 
 ## Usage
 

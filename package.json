@@ -1,6 +1,6 @@
 {
   "name": "speed-measure-webpack-plugin",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "Measure + analyse the speed of your webpack loaders and plugins",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "node": ">=6.0.0"
   },
   "peerDependencies": {
-    "webpack": "^1 || ^2 || ^3"
+    "webpack": "^1 || ^2 || ^3 || ^4"
   },
   "devDependencies": {
     "jest": "^22.4.2",

@@ -137,3 +137,11 @@ module.exports.hackWrapLoaders = (loaderPaths, callback) => {
   const Module = require("module");
   Module.prototype.require = wrapReq(Module.prototype.require);
 };
+
+const toCamelCase = s => s.replace(/(\-\w)/g, m => m[1].toUpperCase());
+module.exports.tap = (obj, hookName, func) => {
+  if (obj.hooks) {
+    return obj.hooks[toCamelCase(hookName)].tap("smp", func);
+  }
+  return obj.plugin(hookName, func);
+};

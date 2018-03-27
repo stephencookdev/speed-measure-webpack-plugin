@@ -2,4 +2,5 @@ app.js
 constants.js
 styles.css
 smp.test.js
+jest.config.js
 dist
