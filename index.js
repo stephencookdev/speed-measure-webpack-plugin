@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const chalk = require("chalk");
-const { WrappedPlugin } = require("./WrappedPlugin");
+const { WrappedPlugin, clear } = require("./WrappedPlugin");
 const {
   getModuleName,
   getLoaderNames,
@@ -120,6 +120,7 @@ module.exports = class SpeedMeasurePlugin {
       this.addTimeEvent("misc", "compile", "start", { watch: false });
     });
     tap(compiler, "done", () => {
+      clear();
       this.addTimeEvent("misc", "compile", "end", { fillLast: true });
 
       const outputToFile = typeof this.options.outputTarget === "string";
