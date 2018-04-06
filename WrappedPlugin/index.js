@@ -243,6 +243,11 @@ const wrap = (orig, pluginName, smp, addEndEvent) => {
   return wrappedReturn;
 };
 
+module.exports.clear = () => {
+  wrappedObjs.length = 0;
+  wrappedHooks.length = 0;
+};
+
 module.exports.WrappedPlugin = class WrappedPlugin {
   constructor(plugin, pluginName, smp) {
     this._smp_plugin = plugin;
