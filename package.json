@@ -1,11 +1,12 @@
 {
   "name": "speed-measure-webpack-plugin",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Measure + analyse the speed of your webpack loaders and plugins",
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "functional-test": "lerna bootstrap && lerna run prepare && lerna run test && lerna run cleanup"
+    "functional-test": "lerna bootstrap && lerna run prepare && lerna run test && lerna run cleanup",
+    "documentation-test": "alex ./README.md && write-good ./README.md"
   },
   "repository": {
     "type": "git",
@@ -27,9 +28,11 @@
     "webpack": "^1 || ^2 || ^3 || ^4"
   },
   "devDependencies": {
+    "alex": "^5.1.0",
     "jest": "^22.4.2",
     "lerna": "^2.9.0",
-    "prettier": "1.10.2"
+    "prettier": "1.10.2",
+    "write-good": "^0.11.3"
   },
   "dependencies": {
     "chalk": "^2.0.1"
