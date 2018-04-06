@@ -71,7 +71,7 @@ Check out the [examples folder](/examples) for some more examples.
 
 ## Options
 
-Options are (optionally) passed in to the constructor
+Pass these into the constructor, as an object:
 
 ```javascript
 const smp = new SpeedMeasurePlugin(options);
@@ -82,7 +82,9 @@ const smp = new SpeedMeasurePlugin(options);
 Type: `Boolean`<br>
 Default: `false`
 
-If truthy, this plugin does nothing at all. It is recommended to set this with something similar to `{ disable: !process.env.MEASURE }` to allow opt-in measurements with a `MEASURE=true npm run build`
+If truthy, this plugin does nothing at all.
+
+`{ disable: !process.env.MEASURE }` allows opt-in measurements with `MEASURE=true npm run build`.
 
 ### `options.outputFormat`
 
@@ -94,7 +96,7 @@ Determines in what format this plugin prints its measurements
  * `"json"` - produces a JSON blob
  * `"human"` - produces a human readable output
  * `"humanVerbose"` - produces a more verbose version of the human readable output
- * If a function, it will call the function with the JSON blob being the first parameter, and just the response of the function as the output
+ * If a function, it will call the function with the JSON blob, and output the response
 
 ### `options.outputTarget`
 
@@ -133,14 +135,14 @@ const webpackConfig = smp.wrap({
 Type: `Boolean`<br>
 Default: `false`
 
-If truthy, this plugin will attempt to break down the loader timing data to give per-loader timing information.
+By default, SMP measures loaders in groups. If truthy, this plugin will give per-loader timing information.
 
-Points of note that the following loaders will have inaccurate results in this mode:
+This flag is _experimental_. Some loaders will have inaccurate results:
 
- * loaders using separate processes (e.g. `thread-loader`) - these make it difficult to get timing information on the subsequent loaders, as they're not attached to the main thread
- * loaders emitting file output (e.g. `file-loader`) - the time taken in outputting the actual file is not included in the running time of the loader
+ * loaders using separate processes (e.g. `thread-loader`)
+ * loaders emitting file output (e.g. `file-loader`)
 
-These are restrictions from technical limitations - ideally we would find solutions to these problems before removing the _(experimental)_ flag on this options
+We will find solutions to these issues before removing the _(experimental)_ flag on this option.
 
 ## License
 
