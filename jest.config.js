@@ -1,3 +1,4 @@
 module.exports = {
-  testPathIgnorePatterns: ["__tests__"]
+  testPathIgnorePatterns: ["__tests__"],
+  testURL: "http://localhost",
 }
