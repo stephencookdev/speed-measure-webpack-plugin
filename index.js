@@ -34,6 +34,9 @@ module.exports = class SpeedMeasurePlugin {
 
   wrap(config) {
     if (this.options.disable) return config;
+    if (Array.isArray(config)) return config.map(this.wrap);
+    if (typeof config === "function")
+      return (...args) => this.wrap(config(...args));
 
     config.plugins = (config.plugins || []).map(plugin => {
       const pluginName =

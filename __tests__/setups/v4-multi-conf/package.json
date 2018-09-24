@@ -1,0 +1,24 @@
+{
+  "name": "v4-multi-conf",
+  "version": "0.0.1",
+  "description": "Test webpack v4 with multiple configs with SMP",
+  "scripts": {
+    "prepare": "cp -r ../../common/* .",
+    "test": "jest ./smp.test.js",
+    "cleanup": "rm -rf dist"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "devDependencies": {
+    "babel-loader": "^7.1.4",
+    "css-loader": "^0.28.11",
+    "jest": "^22.3.0",
+    "style-loader": "^0.20.3",
+    "webpack": "^4.2.0"
+  },
+  "dependencies": {
+    "diff": "^3.5.0"
+  }
+}
