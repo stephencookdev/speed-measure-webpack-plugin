@@ -17,6 +17,6 @@
     "hard-source-webpack-plugin": "^0.6.4",
     "jest": "^22.3.0",
     "style-loader": "^0.20.3",
-    "webpack": "^4.2.0"
+    "webpack": "^4.19.1"
   }
 }
