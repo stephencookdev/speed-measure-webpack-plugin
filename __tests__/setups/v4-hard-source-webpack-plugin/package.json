@@ -5,7 +5,8 @@
   "scripts": {
     "prepare": "cp -r ../../common/* .",
     "test": "jest ./smp.test.js",
-    "cleanup": "rm -rf dist && rm -rf node_modules/.cache"
+    "cleanup": "rm -rf dist && rm -rf node_modules/.cache",
+    "audit-fix": "npm audit fix"
   },
   "license": "MIT",
   "engines": {
