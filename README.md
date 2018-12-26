@@ -7,7 +7,8 @@
 
   <a href="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin"><img src="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin.svg?branch=master" /></a>
   <a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/npm/dw/speed-measure-webpack-plugin.svg" /></a>
-  <a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/node/v/speed-measure-webpack-plugin.svg" /></a>
+  <a href="https://npmmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/node/v/speed-measure-webpack-plugin.svg" /></a>
+  <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg" /></a>
 </div>
 <br>
 
@@ -28,10 +29,6 @@ or
 ```bash
 yarn add -D speed-measure-webpack-plugin
 ```
-
-## Migrating
-
-SMP follows [semver](https://semver.org/). If upgrading a major version, you can consult [the migration guide](./migration.md).
 
 ## Requirements
 
@@ -143,6 +140,16 @@ This flag is _experimental_. Some loaders will have inaccurate results:
  * loaders emitting file output (e.g. `file-loader`)
 
 We will find solutions to these issues before removing the _(experimental)_ flag on this option.
+
+## Contributing
+
+Contributors are welcome! 😊
+
+Please check out the [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+## Migrating
+
+SMP follows [semver](https://semver.org/). If upgrading a major version, you can consult [the migration guide](./migration.md).
 
 ## License
 
