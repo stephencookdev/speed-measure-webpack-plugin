@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest",
     "functional-test": "lerna bootstrap && lerna run prepare && lerna run test && lerna run cleanup",
+    "audit-fix": "npm audit fix && lerna run audit-fix",
     "documentation-test": "alex ./README.md && write-good ./README.md"
   },
   "repository": {
@@ -28,7 +29,7 @@
     "webpack": "^1 || ^2 || ^3 || ^4"
   },
   "devDependencies": {
-    "alex": "^6.0.0",
+    "alex": "^7.0.0",
     "jest": "^22.4.2",
     "lerna": "^2.9.0",
     "prettier": "^1.15.3",
