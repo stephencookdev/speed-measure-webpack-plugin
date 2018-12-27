@@ -3,9 +3,11 @@
   "version": "0.0.1",
   "description": "Test webpack v4 with SMP",
   "scripts": {
+    "full-test": "npm run prepare && npm run test && npm run cleanup",
     "prepare": "cp -r ../../common/* .",
     "test": "jest ./smp.test.js",
-    "cleanup": "rm -rf dist"
+    "cleanup": "rm -rf dist",
+    "audit-fix": "npm audit fix"
   },
   "license": "MIT",
   "engines": {
