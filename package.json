@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "functional-test": "lerna bootstrap && lerna run prepare && lerna run test && lerna run cleanup",
-    "audit-fix": "npm audit fix && lerna run audit-fix",
-    "documentation-test": "alex ./README.md && write-good ./README.md"
+    "functional-test": "lerna bootstrap && lerna run full-test",
+    "audit-fix": "npm audit fix && lerna run audit-fix --parallel",
+    "documentation-test": "alex ./*.md && write-good ./*.md"
   },
   "repository": {
     "type": "git",
