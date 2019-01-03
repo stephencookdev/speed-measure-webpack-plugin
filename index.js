@@ -48,6 +48,12 @@ module.exports = class SpeedMeasurePlugin {
       return new WrappedPlugin(plugin, pluginName, this);
     });
 
+    if (config.optimization && config.optimization.minimizer) {
+      config.optimization.minimizer = config.optimization.minimizer.map(plugin => {
+        return new WrappedPlugin(plugin, plugin.constructor.name, this);
+      });
+    }
+
     if (config.module && this.options.granularLoaderData) {
       config.module = prependLoader(config.module);
     }
