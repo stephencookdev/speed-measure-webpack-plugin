@@ -1,5 +1,6 @@
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CustomPlugin = require('./customPlugin')
 
 module.exports = {
   entry: {
@@ -11,6 +12,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({ FOO: "'BAR'" }),
     new HtmlWebpackPlugin(),
+    new CustomPlugin()
   ],
   module: {
     rules: [

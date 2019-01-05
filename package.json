@@ -28,7 +28,7 @@
     "webpack": "^1 || ^2 || ^3 || ^4"
   },
   "devDependencies": {
-    "alex": "^6.0.0",
+    "alex": "^7.0.0",
     "jest": "^22.4.2",
     "lerna": "^2.9.0",
     "prettier": "1.10.2",
