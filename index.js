@@ -140,14 +140,12 @@ module.exports = class SpeedMeasurePlugin {
       chalk.enabled = true;
       if (outputToFile) {
         const writeMethod = fs.existsSync(this.options.outputTarget)
-          ? fs.appendFile
-          : fs.writeFile;
-        writeMethod(this.options.outputTarget, output + "\n", err => {
-          if (err) throw err;
-          console.log(
-            smpTag() + "Outputted timing info to " + this.options.outputTarget
-          );
-        });
+          ? fs.appendFileSync
+          : fs.writeFileSync;
+        writeMethod(this.options.outputTarget, output + "\n");
+        console.log(
+          smpTag() + "Outputted timing info to " + this.options.outputTarget
+        );
       } else {
         const outputFunc = this.options.outputTarget || console.log;
         outputFunc(output);
