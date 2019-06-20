@@ -94,6 +94,14 @@ module.exports.getHumanOutput = (outputObj, options = {}) => {
 
         xEqualsY.push(["module count", loaderObj.averages.dataPoints]);
 
+        if (options.loaderTopFiles) {
+          const loopLen = Math.min(loaderObj.rawStartEnds.length, options.loaderTopFiles);
+          for (let i = 0; i < loopLen; i++) {
+            const rawItem = loaderObj.rawStartEnds[i];
+            xEqualsY.push([rawItem.name, hT(rawItem.end - rawItem.start)]);
+          }
+        }
+
         const maxXLength = xEqualsY.reduce(
           (acc, cur) => Math.max(acc, cur[0].length),
           0
@@ -148,6 +156,9 @@ module.exports.getLoadersOutput = data => {
       activeTime,
       loaders: startEnds[0].loaders,
       subLoadersTime: subLoadersActiveTime,
+      rawStartEnds: startEnds.sort(
+        (a, b) => b.end - b.start - (a.end - a.start)
+      ),
     };
   });
 

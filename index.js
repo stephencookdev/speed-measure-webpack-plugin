@@ -82,6 +82,7 @@ module.exports = class SpeedMeasurePlugin {
     if (typeof this.options.outputFormat === "function")
       return this.options.outputFormat(outputObj);
     return getHumanOutput(outputObj, {
+      ...this.options,
       verbose: this.options.outputFormat === "humanVerbose",
     });
   }
