@@ -51,10 +51,12 @@ module.exports.getLoaderNames = loaders =>
     ? loaders
         .map(l => l.loader || l)
         .map(l =>
-          l.replace(
-            /^.*\/node_modules\/(@[a-z0-9][\w-.]+\/[a-z0-9][\w-.]*|[^\/]+).*$/,
-            (_, m) => m
-          )
+          l
+            .replace(/\\/g, "/")
+            .replace(
+              /^.*\/node_modules\/(@[a-z0-9][\w-.]+\/[a-z0-9][\w-.]*|[^\/]+).*$/,
+              (_, m) => m
+            )
         )
         .filter(l => !l.includes("speed-measure-webpack-plugin"))
     : ["modules with no loaders"];

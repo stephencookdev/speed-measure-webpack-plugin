@@ -141,6 +141,16 @@ This flag is _experimental_. Some loaders will have inaccurate results:
 
 We will find solutions to these issues before removing the _(experimental)_ flag on this option.
 
+## FAQ
+
+### What does general output time mean?
+
+This tends to be down to webpack reading in from the file-system, but in general it's anything outside of what SMP can actually measure.
+
+### What does modules without loaders mean?
+
+It means vanilla JS files, which webpack can handle out of the box.
+
 ## Contributing
 
 Contributors are welcome! 😊
