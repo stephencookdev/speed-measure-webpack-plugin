@@ -7,7 +7,8 @@ let id = 0;
 const NS = path.dirname(fs.realpathSync(__filename));
 
 const getLoaderName = path => {
-  const nodeModuleName = /\/node_modules\/([^\/]+)/.exec(path);
+  const standardPath = path.replace(/\\/g, "/");
+  const nodeModuleName = /\/node_modules\/([^\/]+)/.exec(standardPath);
   return (nodeModuleName && nodeModuleName[1]) || "";
 };
 
@@ -36,7 +37,7 @@ module.exports.pitch = function() {
               });
               return asyncCallback.apply(this, arguments);
             };
-          }.bind(this)
+          }.bind(this),
         });
 
         callback({
