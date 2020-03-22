@@ -145,11 +145,11 @@ We will find solutions to these issues before removing the _(experimental)_ flag
 
 ### What does general output time mean?
 
-This tends to be generally down to webpack reading in from the file-system, but it's hard to say - it'll be very repo specific!
+This tends to be down to webpack reading in from the file-system, but in general it's anything outside of what SMP can actually measure.
 
 ### What does modules without loaders mean?
 
-It basically just means vanilla JS files, which webpack can handle out of the box.
+It means vanilla JS files, which webpack can handle out of the box.
 
 ## Contributing
 
