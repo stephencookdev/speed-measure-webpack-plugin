@@ -164,12 +164,16 @@ const construcNamesToWrap = [
 ];
 
 const wrappedObjs = [];
-const wrap = (orig, pluginName, smp, addEndEvent) => {
-  if (!orig) return orig;
+const findWrappedObj = (orig, pluginName) => {
   const prevWrapped = wrappedObjs.find(
     w => w.pluginName === pluginName && (w.orig === orig || w.wrapped === orig)
   );
   if (prevWrapped) return prevWrapped.wrapped;
+};
+const wrap = (orig, pluginName, smp, addEndEvent) => {
+  if (!orig) return orig;
+  const prevWrapped = findWrappedObj(orig, pluginName);
+  if (prevWrapped) return prevWrapped;
 
   const getOrigConstrucName = target =>
     target && target.constructor && target.constructor.name;
@@ -216,6 +220,13 @@ const wrap = (orig, pluginName, smp, addEndEvent) => {
             smp,
             getOrigConstrucName(target)
           );
+
+        if (shouldWrap && property === "compiler") {
+          const prevWrapped = findWrappedObj(raw, pluginName);
+          if (prevWrapped) {
+            return prevWrapped;
+          }
+        }
 
         if (typeof raw === "function") {
           const ret = raw.bind(proxy);
