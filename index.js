@@ -1,6 +1,8 @@
 const path = require("path");
 const fs = require("fs");
 const chalk = require("chalk");
+const { fg } = require("./colours");
+const exec = require("child_process").exec;
 const { WrappedPlugin, clear } = require("./WrappedPlugin");
 const {
   getModuleName,
@@ -30,6 +32,8 @@ module.exports = class SpeedMeasurePlugin {
     this.addTimeEvent = this.addTimeEvent.bind(this);
     this.apply = this.apply.bind(this);
     this.provideLoaderTiming = this.provideLoaderTiming.bind(this);
+    this.getLoadersBuildComparison = this.getLoadersBuildComparison.bind(this);
+    this.commitBuidlComparison = this.commitBuidlComparison.bind(this);
   }
 
   wrap(config) {
@@ -68,6 +72,104 @@ module.exports = class SpeedMeasurePlugin {
     return config;
   }
 
+  commitBuidlComparison() {
+    let loaderFile = this.options.compareLoadersBuild.filePath || "";
+    let gitCmd = `git add ${loaderFile} && git commit -m 'Updating file with new build info' && git push origin`;
+    exec(gitCmd, function(err, stdout, stderr) {
+      if (err) {
+        console.log(fg("There was error while committing your changes."), err);
+        return;
+      }
+      console.log("--------------------------------------------");
+      console.log(fg("Succefully Committed Build Info."), stdout);
+      console.log("--------------------------------------------");
+    });
+  }
+  getLoadersBuildComparison() {
+    let objBuildData = { loaderInfo: [] };
+    let loaderFile = this.options.compareLoadersBuild.filePath || "";
+    const outputObj = getLoadersOutput(this.timeEventData.loaders);
+
+    if (outputObj && loaderFile && fs.existsSync(loaderFile)) {
+      let buildDetails = fs.readFileSync(loaderFile);
+      buildDetails =
+        buildDetails.toString() !== "" ? JSON.parse(buildDetails) : [];
+      const buildCount = buildDetails.length;
+      const buildNo =
+        buildCount > 0 ? buildDetails[buildCount - 1]["buildNo"] + 1 : 1;
+
+      /*********************** Code to create object format of current loader and write in the file. ************************/
+      outputObj.build.forEach((loaderObj, loaderIndex) => {
+        const loaderInfo = {};
+        loaderInfo["Name"] = loaderObj.loaders.join(",") || "";
+        loaderInfo["Time"] = loaderObj.activeTime || "";
+        loaderInfo["Count"] =
+          this.options.outputFormat === "humanVerbose"
+            ? loaderObj.averages.dataPoints
+            : "";
+        loaderInfo[`Comparison`] = "";
+
+        // Getting the comparison from the previous build by default only in case if build data is more then one.
+        if (buildCount > 0) {
+          const prevBuildIndex = buildCount - 1;
+          for (
+            var y = 0;
+            y < buildDetails[prevBuildIndex]["loaderInfo"].length;
+            y++
+          ) {
+            const prevloaderDetails =
+              buildDetails[prevBuildIndex]["loaderInfo"][y];
+            if (
+              loaderInfo["Name"] == prevloaderDetails["Name"] &&
+              prevloaderDetails["Time"]
+            ) {
+              let previousBuildTime =
+                buildDetails[prevBuildIndex]["loaderInfo"][y]["Time"];
+              loaderInfo[`Comparison`] = `buildDiff--> ${Math.abs(
+                previousBuildTime - loaderObj.activeTime
+              )}|${previousBuildTime > loaderObj.activeTime ? "Good" : "Bad"}`;
+            }
+          }
+        }
+
+        objBuildData["loaderInfo"].push(loaderInfo);
+      });
+
+      buildDetails.push({ buildNo, loaderInfo: objBuildData["loaderInfo"] });
+      fs.writeFileSync(loaderFile, JSON.stringify(buildDetails));
+      /****************************************************************************************/
+
+      let outputTable = [];
+      let objCurrentBuild = {};
+
+      for (let i = 0; i < buildDetails.length; i++) {
+        outputTable = [];
+        console.log("--------------------------------------------");
+        console.log("Build No ", buildDetails[i]["buildNo"]);
+        console.log("--------------------------------------------");
+
+        if (buildDetails[i]["loaderInfo"]) {
+          buildDetails[i]["loaderInfo"].forEach(
+            (buildIndex, buildInfoIndex) => {
+              const buildInfo = buildDetails[i]["loaderInfo"][buildInfoIndex];
+              objCurrentBuild = {};
+              objCurrentBuild["Name"] = buildInfo["Name"] || "";
+              objCurrentBuild["Time"] = buildInfo["Time"] || "";
+              if (this.options.outputFormat === "humanVerbose")
+                objCurrentBuild["Count"] = buildInfo["Count"] || 0;
+              objCurrentBuild["Comparison"] = buildInfo["Comparison"] || "";
+              outputTable.push(objCurrentBuild);
+            }
+          );
+        }
+        console.table(outputTable);
+      }
+
+      // Commiting the build info file to git remote repo.
+      this.options.compareLoadersBuild.commitBuildInfo &&
+        this.commitBuidlComparison();
+    }
+  }
   getOutput() {
     const outputObj = {};
     if (this.timeEventData.misc)
@@ -150,7 +252,8 @@ module.exports = class SpeedMeasurePlugin {
         const outputFunc = this.options.outputTarget || console.log;
         outputFunc(output);
       }
-
+      // Build Comparison functionality.
+      if (this.options.compareLoadersBuild) this.getLoadersBuildComparison();
       this.timeEventData = {};
     });
 
