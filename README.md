@@ -135,7 +135,7 @@ e.g.
 
 ```javascript
 const smp = new SpeedMeasurePlugin({
-  compareLoadersBuild: { filePath: "./suraj.txt", commitBuildInfo: true },
+  compareLoadersBuild: { filePath: "./buildInfo.json", commitBuildInfo: true },
 });
 ```
 
