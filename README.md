@@ -130,7 +130,7 @@ with previous build of each loader. It takes two input, one is the `filePath` wh
 filename where all build details will be written and second one is `commitBuildInfo` which
 is not mandatory but on basis of this flag, your `filePath file` gets git commited to your
 `current checkout branch` and will also push it to remote origin.
-`Note :- filePath option is mandatory, commitBuildInfo is not mandatory. But if you apply commitBuildInfo you should checkout the branch on your machine/server on which the filePath file should get committed before running your webpack build. Also the module count will only be visible when the outputFormat is 'humanVerbose'`,
+`Note :- i) Node version > 0.10 ii) filePath option is mandatory, commitBuildInfo is not mandatory. iii) But if you apply commitBuildInfo you should checkout the branch on your machine/server on which the filePath file should get committed before running your webpack build. Also the module count will only be visible when the outputFormat is 'humanVerbose'.`,
 e.g.
 
 ```javascript
