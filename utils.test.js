@@ -27,6 +27,23 @@ describe("prependLoader", () => {
     },
 
     {
+      name: "single loader with options",
+
+      from: {
+        test: /\.jsx?$/,
+        loader: "babel-loader",
+        options: {},
+      },
+      to: {
+        test: /\.jsx?$/,
+        use: [
+          "speed-measure-webpack-plugin/loader",
+          { loader: "babel-loader", options: {} },
+        ],
+      },
+    },
+
+    {
       name: "single complex use",
 
       from: {
