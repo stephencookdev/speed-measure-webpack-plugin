@@ -97,6 +97,10 @@ const prependLoader = rules => {
 
   if (rules.loader) {
     rules.use = [rules.loader];
+    if (rules.options) {
+      rules.use[0] = { loader: rules.loader, options: rules.options };
+      delete rules.options;
+    }
     delete rules.loader;
   }
 
