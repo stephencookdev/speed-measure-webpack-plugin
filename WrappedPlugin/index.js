@@ -125,6 +125,10 @@ const wrapHooks = (orig, pluginName, smp, type) => {
       get: (target, property) => {
         const raw = Reflect.get(target, property);
 
+        if (Object.isFrozen(target)) {
+          return raw;
+        }
+
         if (property === "tap" && typeof raw === "function")
           return wrapTap(raw, pluginName, smp, type, method).bind(proxy);
         if (property === "tapAsync" && typeof raw === "function")
