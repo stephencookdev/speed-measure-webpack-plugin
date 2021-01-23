@@ -62,6 +62,16 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "NdYAG",
+      "name": "Ximing",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1396511?v=4",
+      "profile": "https://daix.me/",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7
