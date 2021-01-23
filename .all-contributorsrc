@@ -9,6 +9,7 @@
   "imageSize": 100,
   "commit": true,
   "commitConvention": "none",
+  "badgeTemplate": "<a href=\"#contributors\"><img src=\"https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg\" /></a>",
   "contributors": [
     {
       "login": "stephencookdev",
@@ -22,6 +23,15 @@
         "design",
         "question",
         "review"
+      ]
+    },
+    {
+      "login": "scarletsky",
+      "name": "scarletsky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2386165?v=4",
+      "profile": "https://scarletsky.github.io/",
+      "contributions": [
+        "code"
       ]
     }
   ],
