@@ -9,7 +9,8 @@
     "audit-fix": "npm audit fix && lerna run audit-fix --parallel",
     "documentation-test": "alex ./*.md && write-good ./*.md",
     "lint": "prettier --check \"*.{js,json,css,md}\"",
-    "fixlint": "prettier --write \"*.{js,json,css,md}\""
+    "fixlint": "prettier --write \"*.{js,json,css,md}\"",
+    "ac": "all-contributors"
   },
   "repository": {
     "type": "git",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "alex": "^9.1.0",
+    "all-contributors-cli": "^6.19.0",
     "husky": "^4.2.3",
     "jest": "^26.6.3",
     "lerna": "^3.22.1",
