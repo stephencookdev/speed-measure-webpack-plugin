@@ -130,20 +130,16 @@ const webpackConfig = smp.wrap({
 ### `options.loaderTopFiles`
 
 Type: `Number`<br>
-Default: 0
+Default: `0`
 
-`loaderTopFiles` is used with `outputFormat: 'humanVerbose'`:
+You can configure SMP to include the files that take the most time per loader, when using `outputFormat: 'humanVerbose'`. E.g., to show the top 10 files per loader:
 
-```
+```javascript
 const smp = new SpeedMeasurePlugin({
   outputFormat: 'humanVerbose',
   loaderTopFiles: 10
 });
 ```
-
-you can clearly see the most cost-effective loader files:
-
-![cost-effective-loader](cost-effective-loader.png)
 
 
 ### `options.granularLoaderData` _(experimental)_
