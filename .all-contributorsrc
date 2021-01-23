@@ -1,0 +1,29 @@
+{
+  "projectName": "speed-measure-webpack-plugin",
+  "projectOwner": "stephencookdev",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "stephencookdev",
+      "name": "Stephen Cook",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8496655?v=4",
+      "profile": "https://stephencookdev.co.uk/",
+      "contributions": [
+        "code",
+        "doc",
+        "blog",
+        "design",
+        "question",
+        "review"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
