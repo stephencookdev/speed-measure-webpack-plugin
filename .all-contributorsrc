@@ -52,6 +52,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "alan-agius4",
+      "name": "Alan Agius",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17563226?v=4",
+      "profile": "https://github.com/alan-agius4",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7
