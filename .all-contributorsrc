@@ -33,6 +33,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "wayou",
+      "name": "牛さん",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3783096?v=4",
+      "profile": "https://github.com/wayou",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7
