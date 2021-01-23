@@ -53,6 +53,6 @@
     "write-good": "^1.0.2"
   },
   "dependencies": {
-    "chalk": "^2.0.1"
+    "chalk": "^4.1.0"
   }
 }
