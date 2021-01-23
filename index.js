@@ -81,10 +81,10 @@ module.exports = class SpeedMeasurePlugin {
       return JSON.stringify(outputObj, null, 2);
     if (typeof this.options.outputFormat === "function")
       return this.options.outputFormat(outputObj);
-    return getHumanOutput(outputObj, {
-      ...this.options,
-      verbose: this.options.outputFormat === "humanVerbose",
-    });
+    return getHumanOutput(outputObj, Object.assign(
+      { verbose: this.options.outputFormat === "humanVerbose" },
+      this.options)
+    );
   }
 
   addTimeEvent(category, event, eventType, data = {}) {
