@@ -5,10 +5,11 @@
     <div><sup><em>(for webpack)</em></sup></div>
   </h1>
 
-  <a href="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin"><img src="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin.svg?branch=master" /></a>
-  <a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/npm/dw/speed-measure-webpack-plugin.svg" /></a>
-  <a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/node/v/speed-measure-webpack-plugin.svg" /></a>
-  <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg" /></a>
+<a href="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin"><img src="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin.svg?branch=master" /></a>
+<a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/npm/dw/speed-measure-webpack-plugin.svg" /></a>
+<a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/node/v/speed-measure-webpack-plugin.svg" /></a>
+<a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg" /></a>
+
 </div>
 <br>
 
@@ -40,11 +41,8 @@ Change your webpack config from
 
 ```javascript
 const webpackConfig = {
-  plugins: [
-    new MyPlugin(),
-    new MyOtherPlugin()
-  ]
-}
+  plugins: [new MyPlugin(), new MyOtherPlugin()],
+};
 ```
 
 to
@@ -55,10 +53,7 @@ const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 const smp = new SpeedMeasurePlugin();
 
 const webpackConfig = smp.wrap({
-  plugins: [
-    new MyPlugin(),
-    new MyOtherPlugin()
-  ]
+  plugins: [new MyPlugin(), new MyOtherPlugin()],
 });
 ```
 
@@ -90,18 +85,18 @@ Default: `"human"`
 
 Determines in what format this plugin prints its measurements
 
- * `"json"` - produces a JSON blob
- * `"human"` - produces a human readable output
- * `"humanVerbose"` - produces a more verbose version of the human readable output
- * If a function, it will call the function with the JSON blob, and output the response
+- `"json"` - produces a JSON blob
+- `"human"` - produces a human readable output
+- `"humanVerbose"` - produces a more verbose version of the human readable output
+- If a function, it will call the function with the JSON blob, and output the response
 
 ### `options.outputTarget`
 
 Type: `String|Function`<br>
 Default: `console.log`
 
-* If a string, it specifies the path to a file to output to.
-* If a function, it will call the function with the output as the first parameter
+- If a string, it specifies the path to a file to output to.
+- If a function, it will call the function with the output as the first parameter
 
 ### `options.pluginNames`
 
@@ -116,14 +111,12 @@ takes an object of `pluginName: PluginConstructor`, e.g.
 const uglify = new UglifyJSPlugin();
 const smp = new SpeedMeasurePlugin({
   pluginNames: {
-    customUglifyName: uglify
-  }
+    customUglifyName: uglify,
+  },
 });
 
 const webpackConfig = smp.wrap({
-  plugins: [
-    uglify
-  ]
+  plugins: [uglify],
 });
 ```
 
@@ -136,11 +129,10 @@ You can configure SMP to include the files that take the most time per loader, w
 
 ```javascript
 const smp = new SpeedMeasurePlugin({
-  outputFormat: 'humanVerbose',
-  loaderTopFiles: 10
+  outputFormat: "humanVerbose",
+  loaderTopFiles: 10,
 });
 ```
-
 
 ### `options.granularLoaderData` _(experimental)_
 
@@ -151,8 +143,8 @@ By default, SMP measures loaders in groups. If truthy, this plugin will give per
 
 This flag is _experimental_. Some loaders will have inaccurate results:
 
- * loaders using separate processes (e.g. `thread-loader`)
- * loaders emitting file output (e.g. `file-loader`)
+- loaders using separate processes (e.g. `thread-loader`)
+- loaders emitting file output (e.g. `file-loader`)
 
 We will find solutions to these issues before removing the _(experimental)_ flag on this option.
 

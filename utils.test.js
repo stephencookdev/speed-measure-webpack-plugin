@@ -121,7 +121,7 @@ describe("prependLoader", () => {
     },
   ];
 
-  expectedMappings.forEach(mapping => {
+  expectedMappings.forEach((mapping) => {
     it('should create the expected mapping for "' + mapping.name + '"', () => {
       expect(prependLoader(mapping.from)).toEqual(mapping.to);
     });

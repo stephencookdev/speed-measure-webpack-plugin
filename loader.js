@@ -6,31 +6,31 @@ let id = 0;
 
 const NS = path.dirname(fs.realpathSync(__filename));
 
-const getLoaderName = path => {
+const getLoaderName = (path) => {
   const standardPath = path.replace(/\\/g, "/");
   const nodeModuleName = /\/node_modules\/([^\/]+)/.exec(standardPath);
   return (nodeModuleName && nodeModuleName[1]) || "";
 };
 
-module.exports.pitch = function() {
+module.exports.pitch = function () {
   const callback = this[NS];
   const module = this.resourcePath;
   const loaderPaths = this.loaders
-    .map(l => l.path)
-    .filter(l => !l.includes("speed-measure-webpack-plugin"));
+    .map((l) => l.path)
+    .filter((l) => !l.includes("speed-measure-webpack-plugin"));
 
   // Hack ourselves to overwrite the `require` method so we can override the
   // loadLoaders
   hackWrapLoaders(loaderPaths, (loader, path) => {
     const loaderName = getLoaderName(path);
-    const wrapFunc = func =>
-      function() {
+    const wrapFunc = (func) =>
+      function () {
         const loaderId = id++;
         const almostThis = Object.assign({}, this, {
-          async: function() {
+          async: function () {
             const asyncCallback = this.async.apply(this, arguments);
 
-            return function() {
+            return function () {
               callback({
                 id: loaderId,
                 type: "end",

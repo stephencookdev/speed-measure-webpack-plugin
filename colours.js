@@ -9,4 +9,4 @@ module.exports.fg = (text, time) => {
   return textModifier(text);
 };
 
-module.exports.bg = text => chalk.bgBlack.green.bold(text);
+module.exports.bg = (text) => chalk.bgBlack.green.bold(text);
