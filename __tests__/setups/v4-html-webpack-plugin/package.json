@@ -16,9 +16,9 @@
   "devDependencies": {
     "babel-loader": "^7.1.4",
     "css-loader": "^0.28.11",
-    "html-webpack-plugin": "^4.0.0-beta.14",
+    "html-webpack-plugin": "^4.5.1",
     "jest": "^22.3.0",
     "style-loader": "^0.20.3",
-    "webpack": "^4.42.0"
+    "webpack": "^4.46.0"
   }
 }
