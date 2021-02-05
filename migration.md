@@ -6,26 +6,29 @@ SMP follows [semver](https://semver.org/). This guide should help with upgrading
 
 ### If Using Static Constructor
 
-If you're using the  `SpeedMeasurePlugin.wrapPlugins(plugins, options)` static method, then
+If you're using the `SpeedMeasurePlugin.wrapPlugins(plugins, options)` static method, then
 
- * remove all `.wrapPlugins` calls
- * instantiate an `smp`
- * call `smp.wrap` on your entire config
+- remove all `.wrapPlugins` calls
+- instantiate an `smp`
+- call `smp.wrap` on your entire config
 
 e.g.
 
 ```javascript
 // v0
 const webpackConfig = {
-  plugins: SpeedMeasurePlugin.wrapPlugins({
-    FooPlugin: new FooPlugin()
-  }, smpOptions)
+  plugins: SpeedMeasurePlugin.wrapPlugins(
+    {
+      FooPlugin: new FooPlugin(),
+    },
+    smpOptions
+  ),
 };
 
 // v1
 const smp = new SpeedMeasurePlugin(smpOptions);
 const webpackConfig = smp.wrap({
-  plugins: [new FooPlugin()]
+  plugins: [new FooPlugin()],
 });
 ```
 
@@ -33,8 +36,8 @@ const webpackConfig = smp.wrap({
 
 If you're using the `smp.wrapPlugins(plugins)` method, then
 
- * remove all `.wrapPlugins` calls
- * call `smp.wrap` on your entire config
+- remove all `.wrapPlugins` calls
+- call `smp.wrap` on your entire config
 
 e.g.
 
@@ -43,14 +46,14 @@ e.g.
 const smp = new SpeedMeasurePlugin(smpOptions);
 const webpackConfig = {
   plugins: smp.wrapPlugins({
-    FooPlugin: new FooPlugin()
-  })
+    FooPlugin: new FooPlugin(),
+  }),
 };
 
 // v1
 const smp = new SpeedMeasurePlugin(smpOptions);
 const webpackConfig = smp.wrap({
-  plugins: [new FooPlugin()]
+  plugins: [new FooPlugin()],
 });
 ```
 
@@ -62,10 +65,10 @@ v1 no longer requires you to manually enter each plugin name. If you want to kee
 const fooPlugin = new FooPlugin();
 const smp = new SpeedMeasurePlugin({
   pluginNames: {
-    customFooPluginName: fooPlugin
-  }
+    customFooPluginName: fooPlugin,
+  },
 });
 const webpackConfig = smp.wrap({
-  plugins: [fooPlugin]
+  plugins: [fooPlugin],
 });
 ```

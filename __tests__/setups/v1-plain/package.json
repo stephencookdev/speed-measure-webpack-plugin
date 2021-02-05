@@ -14,9 +14,10 @@
     "node": ">=6.0.0"
   },
   "devDependencies": {
+    "babel-core": "^6.26.3",
     "babel-loader": "7.0.x",
     "css-loader": "^0.28.10",
-    "jest": "^22.3.0",
+    "jest": "^26.6.3",
     "style-loader": "^0.20.2",
     "webpack": "1.x.x"
   }

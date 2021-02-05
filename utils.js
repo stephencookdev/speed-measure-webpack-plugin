@@ -1,17 +1,17 @@
 const isEqual = (x, y) =>
   Array.isArray(x)
     ? Array.isArray(y) &&
-      x.every(xi => y.includes(xi)) &&
-      y.every(yi => x.includes(yi))
+      x.every((xi) => y.includes(xi)) &&
+      y.every((yi) => x.includes(yi))
     : x === y;
 
-const mergeRanges = rangeList => {
+const mergeRanges = (rangeList) => {
   const mergedQueue = [];
   const inputQueue = [...rangeList];
   while (inputQueue.length) {
     const cur = inputQueue.pop();
     const overlapIndex = mergedQueue.findIndex(
-      item =>
+      (item) =>
         (item.start >= cur.start && item.start <= cur.end) ||
         (item.end >= cur.start && item.end <= cur.end)
     );
@@ -30,12 +30,12 @@ const mergeRanges = rangeList => {
   return mergedQueue;
 };
 
-const sqr = x => x * x;
-const mean = xs => xs.reduce((acc, x) => acc + x, 0) / xs.length;
-const median = xs => xs.sort()[Math.floor(xs.length / 2)];
+const sqr = (x) => x * x;
+const mean = (xs) => xs.reduce((acc, x) => acc + x, 0) / xs.length;
+const median = (xs) => xs.sort()[Math.floor(xs.length / 2)];
 const variance = (xs, mean) =>
   xs.reduce((acc, x) => acc + sqr(x - mean), 0) / (xs.length - 1);
-const range = xs =>
+const range = (xs) =>
   xs.reduce(
     (acc, x) => ({
       start: Math.min(x, acc.start),
@@ -44,25 +44,29 @@ const range = xs =>
     { start: Number.POSITIVE_INFINITY, end: Number.NEGATIVE_INFINITY }
   );
 
-module.exports.getModuleName = module => module.userRequest;
+module.exports.getModuleName = (module) => module.userRequest;
 
-module.exports.getLoaderNames = loaders =>
+module.exports.getLoaderNames = (loaders) =>
   loaders && loaders.length
     ? loaders
-        .map(l => l.loader || l)
-        .map(l =>
-          l.replace(
-            /^.*\/node_modules\/(@[a-z0-9][\w-.]+\/[a-z0-9][\w-.]*|[^\/]+).*$/,
-            (_, m) => m
-          )
+        .map((l) => l.loader || l)
+        .map((l) =>
+          l
+            .replace(/\\/g, "/")
+            .replace(
+              /^.*\/node_modules\/(@[a-z0-9][\w-.]+\/[a-z0-9][\w-.]*|[^\/]+).*$/,
+              (_, m) => m
+            )
         )
-        .filter(l => !l.includes("speed-measure-webpack-plugin"))
+        .filter((l) => !l.includes("speed-measure-webpack-plugin"))
     : ["modules with no loaders"];
 
 module.exports.groupBy = (key, arr) => {
   const groups = [];
-  (arr || []).forEach(arrItem => {
-    const groupItem = groups.find(poss => isEqual(poss[0][key], arrItem[key]));
+  (arr || []).forEach((arrItem) => {
+    const groupItem = groups.find((poss) =>
+      isEqual(poss[0][key], arrItem[key])
+    );
     if (groupItem) groupItem.push(arrItem);
     else groups.push([arrItem]);
   });
@@ -70,8 +74,8 @@ module.exports.groupBy = (key, arr) => {
   return groups;
 };
 
-module.exports.getAverages = group => {
-  const durationList = group.map(cur => cur.end - cur.start);
+module.exports.getAverages = (group) => {
+  const durationList = group.map((cur) => cur.end - cur.start);
 
   const averages = {};
   averages.dataPoints = group.length;
@@ -84,17 +88,21 @@ module.exports.getAverages = group => {
   return averages;
 };
 
-module.exports.getTotalActiveTime = group => {
+module.exports.getTotalActiveTime = (group) => {
   const mergedRanges = mergeRanges(group);
   return mergedRanges.reduce((acc, range) => acc + range.end - range.start, 0);
 };
 
-const prependLoader = rules => {
+const prependLoader = (rules) => {
   if (!rules) return rules;
   if (Array.isArray(rules)) return rules.map(prependLoader);
 
   if (rules.loader) {
     rules.use = [rules.loader];
+    if (rules.options) {
+      rules.use[0] = { loader: rules.loader, options: rules.options };
+      delete rules.options;
+    }
     delete rules.loader;
   }
 
@@ -124,8 +132,8 @@ const prependLoader = rules => {
 module.exports.prependLoader = prependLoader;
 
 module.exports.hackWrapLoaders = (loaderPaths, callback) => {
-  const wrapReq = reqMethod => {
-    return function() {
+  const wrapReq = (reqMethod) => {
+    return function () {
       const ret = reqMethod.apply(this, arguments);
       if (loaderPaths.includes(arguments[0])) {
         if (ret.__smpHacked) return ret;
@@ -143,7 +151,7 @@ module.exports.hackWrapLoaders = (loaderPaths, callback) => {
   Module.prototype.require = wrapReq(Module.prototype.require);
 };
 
-const toCamelCase = s => s.replace(/(\-\w)/g, m => m[1].toUpperCase());
+const toCamelCase = (s) => s.replace(/(\-\w)/g, (m) => m[1].toUpperCase());
 module.exports.tap = (obj, hookName, func) => {
   if (obj.hooks) {
     return obj.hooks[toCamelCase(hookName)].tap("smp", func);

@@ -1,12 +1,12 @@
 {
-  "name": "v3-hard-source-webpack-plugin",
+  "name": "v5-deprecated-hooks",
   "version": "0.0.1",
-  "description": "Test webpack v3, and HardSourceWebpackPlugin with SMP",
+  "description": "Test webpack v5 with a StatsPlugin set-up with SMP",
   "scripts": {
     "full-test": "npm run prepare && npm run test && npm run cleanup",
     "prepare": "cp -r ../../common/* .",
     "test": "jest ./smp.test.js",
-    "cleanup": "rm -rf dist && rm -rf node_modules/.cache",
+    "cleanup": "rm -rf dist",
     "audit-fix": "npm audit fix"
   },
   "license": "MIT",
@@ -15,11 +15,10 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.1",
-    "css-loader": "^0.28.10",
-    "hard-source-webpack-plugin": "^0.13.1",
+    "babel-loader": "^7.1.4",
+    "css-loader": "^0.28.11",
     "jest": "^26.6.3",
-    "style-loader": "^0.20.2",
-    "webpack": "^3.12.0"
+    "style-loader": "^0.20.3",
+    "webpack": "^5.7.0"
   }
 }
