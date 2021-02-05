@@ -33,7 +33,6 @@ module.exports = class SpeedMeasurePlugin {
     this.apply = this.apply.bind(this);
     this.provideLoaderTiming = this.provideLoaderTiming.bind(this);
     this.getLoadersBuildComparison = this.getLoadersBuildComparison.bind(this);
-    this.commitBuidlComparison = this.commitBuidlComparison.bind(this);
   }
 
   wrap(config) {
@@ -72,19 +71,6 @@ module.exports = class SpeedMeasurePlugin {
     return config;
   }
 
-  commitBuidlComparison() {
-    let loaderFile = this.options.compareLoadersBuild.filePath || "";
-    let gitCmd = `git add ${loaderFile} && git commit -m 'Updating file with new build info' && git push origin`;
-    exec(gitCmd, function(err, stdout, stderr) {
-      if (err) {
-        console.log(fg("There was error while committing your changes."), err);
-        return;
-      }
-      console.log("--------------------------------------------");
-      console.log(fg("Succefully Committed Build Info."), stdout);
-      console.log("--------------------------------------------");
-    });
-  }
   getLoadersBuildComparison() {
     let objBuildData = { loaderInfo: [] };
     let loaderFile = this.options.compareLoadersBuild.filePath || "";
@@ -164,12 +150,9 @@ module.exports = class SpeedMeasurePlugin {
         }
         console.table(outputTable);
       }
-
-      // Commiting the build info file to git remote repo.
-      this.options.compareLoadersBuild.commitBuildInfo &&
-        this.commitBuidlComparison();
     }
   }
+
   getOutput() {
     const outputObj = {};
     if (this.timeEventData.misc)
