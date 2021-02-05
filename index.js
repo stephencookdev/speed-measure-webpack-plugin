@@ -1,8 +1,6 @@
 const path = require("path");
 const fs = require("fs");
 const chalk = require("chalk");
-const { fg } = require("./colours");
-const exec = require("child_process").exec;
 const { WrappedPlugin, clear } = require("./WrappedPlugin");
 const {
   getModuleName,
@@ -33,6 +31,7 @@ module.exports = class SpeedMeasurePlugin {
     this.apply = this.apply.bind(this);
     this.provideLoaderTiming = this.provideLoaderTiming.bind(this);
     this.getLoadersBuildComparison = this.getLoadersBuildComparison.bind(this);
+    this.isValidJson = this.isValidJson.bind(this);
   }
 
   wrap(config) {
@@ -71,6 +70,14 @@ module.exports = class SpeedMeasurePlugin {
     return config;
   }
 
+  isValidJson(strJson) {
+    try {
+      return JSON.parse(strJson) && !!strJson;
+    } catch (e) {
+      return false;
+    }
+  }
+
   getLoadersBuildComparison() {
     let objBuildData = { loaderInfo: [] };
     let loaderFile = this.options.compareLoadersBuild.filePath || "";
@@ -78,8 +85,9 @@ module.exports = class SpeedMeasurePlugin {
 
     if (outputObj && loaderFile && fs.existsSync(loaderFile)) {
       let buildDetails = fs.readFileSync(loaderFile);
-      buildDetails =
-        buildDetails.toString() !== "" ? JSON.parse(buildDetails) : [];
+      buildDetails = this.isValidJson(buildDetails.toString())
+        ? JSON.parse(buildDetails)
+        : [];
       const buildCount = buildDetails.length;
       const buildNo =
         buildCount > 0 ? buildDetails[buildCount - 1]["buildNo"] + 1 : 1;
