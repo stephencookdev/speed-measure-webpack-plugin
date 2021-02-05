@@ -1,7 +1,7 @@
 const SpeedMeasurePlugin = require(".");
 const smp = new SpeedMeasurePlugin();
 
-module.exports = neutrino => {
+module.exports = (neutrino) => {
   const origConfig = neutrino.config;
   const wrappedConfig = smp.wrap(origConfig.toConfig());
   neutrino.config = new Proxy(origConfig, {

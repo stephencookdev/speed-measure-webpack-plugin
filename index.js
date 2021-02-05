@@ -41,10 +41,10 @@ module.exports = class SpeedMeasurePlugin {
     if (typeof config === "function")
       return (...args) => this.wrap(config(...args));
 
-    config.plugins = (config.plugins || []).map(plugin => {
+    config.plugins = (config.plugins || []).map((plugin) => {
       const pluginName =
         Object.keys(this.options.pluginNames || {}).find(
-          pluginName => plugin === this.options.pluginNames[pluginName]
+          (pluginName) => plugin === this.options.pluginNames[pluginName]
         ) ||
         (plugin.constructor && plugin.constructor.name) ||
         "(unable to deduce plugin name)";
@@ -53,7 +53,7 @@ module.exports = class SpeedMeasurePlugin {
 
     if (config.optimization && config.optimization.minimizer) {
       config.optimization.minimizer = config.optimization.minimizer.map(
-        plugin => {
+        (plugin) => {
           return new WrappedPlugin(plugin, plugin.constructor.name, this);
         }
       );
@@ -166,9 +166,10 @@ module.exports = class SpeedMeasurePlugin {
       return JSON.stringify(outputObj, null, 2);
     if (typeof this.options.outputFormat === "function")
       return this.options.outputFormat(outputObj);
-    return getHumanOutput(outputObj, {
-      verbose: this.options.outputFormat === "humanVerbose",
-    });
+    return getHumanOutput(outputObj, Object.assign(
+      { verbose: this.options.outputFormat === "humanVerbose" },
+      this.options)
+    );
   }
 
   addTimeEvent(category, event, eventType, data = {}) {
@@ -185,7 +186,7 @@ module.exports = class SpeedMeasurePlugin {
       data.start = curTime;
       eventList.push(data);
     } else if (eventType === "end") {
-      const matchingEvent = eventList.find(e => {
+      const matchingEvent = eventList.find((e) => {
         const allowOverwrite = !e.end || !data.fillLast;
         const idMatch = e.id !== undefined && e.id === data.id;
         const nameMatch =
@@ -193,7 +194,7 @@ module.exports = class SpeedMeasurePlugin {
         return allowOverwrite && (idMatch || nameMatch);
       });
       const eventToModify =
-        matchingEvent || (data.fillLast && eventList.find(e => !e.end));
+        matchingEvent || (data.fillLast && eventList.find((e) => !e.end));
       if (!eventToModify) {
         console.error(
           "Could not find a matching event to end",
@@ -240,12 +241,12 @@ module.exports = class SpeedMeasurePlugin {
       this.timeEventData = {};
     });
 
-    tap(compiler, "compilation", compilation => {
-      tap(compilation, "normal-module-loader", loaderContext => {
+    tap(compiler, "compilation", (compilation) => {
+      tap(compilation, "normal-module-loader", (loaderContext) => {
         loaderContext[NS] = this.provideLoaderTiming;
       });
 
-      tap(compilation, "build-module", module => {
+      tap(compilation, "build-module", (module) => {
         const name = getModuleName(module);
         if (name) {
           this.addTimeEvent("loaders", "build", "start", {
@@ -256,7 +257,7 @@ module.exports = class SpeedMeasurePlugin {
         }
       });
 
-      tap(compilation, "succeed-module", module => {
+      tap(compilation, "succeed-module", (module) => {
         const name = getModuleName(module);
         if (name) {
           this.addTimeEvent("loaders", "build", "end", {

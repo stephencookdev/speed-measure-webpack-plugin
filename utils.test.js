@@ -27,6 +27,23 @@ describe("prependLoader", () => {
     },
 
     {
+      name: "single loader with options",
+
+      from: {
+        test: /\.jsx?$/,
+        loader: "babel-loader",
+        options: {},
+      },
+      to: {
+        test: /\.jsx?$/,
+        use: [
+          "speed-measure-webpack-plugin/loader",
+          { loader: "babel-loader", options: {} },
+        ],
+      },
+    },
+
+    {
       name: "single complex use",
 
       from: {
@@ -104,7 +121,7 @@ describe("prependLoader", () => {
     },
   ];
 
-  expectedMappings.forEach(mapping => {
+  expectedMappings.forEach((mapping) => {
     it('should create the expected mapping for "' + mapping.name + '"', () => {
       expect(prependLoader(mapping.from)).toEqual(mapping.to);
     });

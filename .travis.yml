@@ -1,6 +1,4 @@
 language: node_js
-node_js:
-  - "6"
 script:
   - npm run test
   - npm run functional-test
