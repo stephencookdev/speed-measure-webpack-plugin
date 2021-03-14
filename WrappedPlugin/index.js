@@ -238,7 +238,12 @@ const wrap = (orig, pluginName, smp, addEndEvent) => {
             Object.defineProperty(ret, "name", {
               value: raw.name,
             });
-          return ret;
+          const funcProxy = new Proxy(ret, {
+            get: (target, property) => {
+              return raw[property];
+            },
+          });
+          return funcProxy;
         }
 
         return raw;
