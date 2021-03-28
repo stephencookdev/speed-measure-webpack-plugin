@@ -7,7 +7,7 @@
 
 <!-- ALL-CONTRIBUTORS-BADGE:START -->
 
-<a href="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin"><img src="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin.svg?branch=master" /></a> <a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/npm/dw/speed-measure-webpack-plugin.svg" /></a> <a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/node/v/speed-measure-webpack-plugin.svg" /></a> <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg" /></a> <a href="#contributors"><img src="https://img.shields.io/badge/all_contributors-9-orange.svg" /></a>
+<a href="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin"><img src="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin.svg?branch=master" /></a> <a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/npm/dw/speed-measure-webpack-plugin.svg" /></a> <a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/node/v/speed-measure-webpack-plugin.svg" /></a> <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg" /></a> <a href="#contributors"><img src="https://img.shields.io/badge/all_contributors-10-orange.svg" /></a>
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
@@ -210,6 +210,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/ZauberNerd"><img src="https://avatars.githubusercontent.com/u/249542?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Björn Brauer</b></sub></a><br /><a href="https://github.com/stephencookdev/speed-measure-webpack-plugin/commits?author=ZauberNerd" title="Code">💻</a> <a href="https://github.com/stephencookdev/speed-measure-webpack-plugin/issues?q=author%3AZauberNerd" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/The-Only-Matrix"><img src="https://avatars.githubusercontent.com/u/61681157?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Suraj Patel</b></sub></a><br /><a href="https://github.com/stephencookdev/speed-measure-webpack-plugin/commits?author=The-Only-Matrix" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/hanzooo"><img src="https://avatars.githubusercontent.com/u/16368939?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jm</b></sub></a><br /><a href="https://github.com/stephencookdev/speed-measure-webpack-plugin/commits?author=hanzooo" title="Code">💻</a> <a href="https://github.com/stephencookdev/speed-measure-webpack-plugin/issues?q=author%3Ahanzooo" title="Bug reports">🐛</a> <a href="https://github.com/stephencookdev/speed-measure-webpack-plugin/commits?author=hanzooo" title="Tests">⚠️</a></td>
   </tr>
 </table>
 

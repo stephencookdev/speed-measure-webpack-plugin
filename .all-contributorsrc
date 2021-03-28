@@ -102,6 +102,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "hanzooo",
+      "name": "Jm",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16368939?v=4",
+      "profile": "https://github.com/hanzooo",
+      "contributions": [
+        "code",
+        "bug",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7
