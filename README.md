@@ -135,6 +135,23 @@ const smp = new SpeedMeasurePlugin({
 });
 ```
 
+### `options.compareLoadersBuild`
+
+Type: `Object`<br>
+Default: `{}`
+
+This option gives you per loader module count, module time to execute, time comparison
+with previous build of each loader. It takes input as `filePath` which is
+filename where all build details will be written.
+`Note :- i) Node version > 0.10 ii) filePath option is mandatory. iii) The module count will only be visible when the outputFormat is 'humanVerbose'.`,
+e.g.
+
+```javascript
+const smp = new SpeedMeasurePlugin({
+  compareLoadersBuild: { filePath: "./buildInfo.json" },
+});
+```
+
 ### `options.granularLoaderData` _(experimental)_
 
 Type: `Boolean`<br>
