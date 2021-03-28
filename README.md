@@ -140,15 +140,15 @@ const smp = new SpeedMeasurePlugin({
 Type: `Object`<br>
 Default: `{}`
 
-This option gives you per loader module count, module time to execute, time comparison
-with previous build of each loader. It takes input as `filePath` which is
-filename where all build details will be written.
-`Note :- i) Node version > 0.10 ii) filePath option is mandatory. iii) The module count will only be visible when the outputFormat is 'humanVerbose'.`,
-e.g.
+This option gives you a comparison over time of the module count and time spent, per loader. This option provides more data when `outputFormat: "humanVerbose"`.
+
+Given a required `filePath` to store the build information, this option allows you to compare differences to your codebase over time. E.g.
 
 ```javascript
 const smp = new SpeedMeasurePlugin({
-  compareLoadersBuild: { filePath: "./buildInfo.json" },
+  compareLoadersBuild: {
+    filePath: "./buildInfo.json",
+  },
 });
 ```
 
