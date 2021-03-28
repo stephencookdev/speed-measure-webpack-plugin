@@ -93,6 +93,15 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "The-Only-Matrix",
+      "name": "Suraj Patel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61681157?v=4",
+      "profile": "https://github.com/The-Only-Matrix",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
