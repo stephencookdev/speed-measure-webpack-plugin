@@ -1,3 +1,6 @@
+const _webpack = require("webpack");
+const isWebpack5 = _webpack.version[0] === '5';
+
 const isEqual = (x, y) =>
   Array.isArray(x)
     ? Array.isArray(y) &&
@@ -153,6 +156,9 @@ module.exports.hackWrapLoaders = (loaderPaths, callback) => {
 
 const toCamelCase = (s) => s.replace(/(\-\w)/g, (m) => m[1].toUpperCase());
 module.exports.tap = (obj, hookName, func) => {
+  if (isWebpack5 && hookName === "normal-module-loader") {
+    return
+  }
   if (obj.hooks) {
     return obj.hooks[toCamelCase(hookName)].tap("smp", func);
   }
