@@ -21,7 +21,7 @@ const NS = path.dirname(fs.realpathSync(__filename));
 module.exports = class SpeedMeasurePlugin {
   constructor(options) {
     this.options = options || {};
-
+    this.ignorePlugins = this.options.ignorePlugins || [];
     this.timeEventData = {};
     this.smpPluginAdded = false;
 
@@ -48,7 +48,9 @@ module.exports = class SpeedMeasurePlugin {
         ) ||
         (plugin.constructor && plugin.constructor.name) ||
         "(unable to deduce plugin name)";
-      return new WrappedPlugin(plugin, pluginName, this);
+      return this.ignorePlugins.includes(pluginName)
+        ? plugin
+        : new WrappedPlugin(plugin, pluginName, this);
     });
 
     if (config.optimization && config.optimization.minimizer) {
