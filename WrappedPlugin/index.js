@@ -1,5 +1,7 @@
 let idInc = 0;
 
+const weakMap = new WeakMap();
+
 const genWrappedFunc = ({
   func,
   smp,
@@ -204,6 +206,8 @@ const wrap = (orig, pluginName, smp, addEndEvent) => {
             return orig.apply(this, arguments);
           }
         : orig;
+  } else if (weakMap.has(orig)) {
+    return weakMap.get(orig);
   } else {
     const proxy = new Proxy(orig, {
       get: (target, property) => {
@@ -255,6 +259,8 @@ const wrap = (orig, pluginName, smp, addEndEvent) => {
         return Reflect.deleteProperty(target, property);
       },
     });
+
+    weakMap.set(orig, proxy);
 
     wrappedReturn = proxy;
   }

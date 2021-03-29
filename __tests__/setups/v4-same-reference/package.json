@@ -1,0 +1,23 @@
+{
+  "name": "v4-same-reference",
+  "version": "0.0.1",
+  "description": "Test webpack v4, with a plugin that rely on compilation reference with SMP",
+  "scripts": {
+    "full-test": "npm run prepare && npm run test && npm run cleanup",
+    "prepare": "cp -r ../../common/* .",
+    "test": "jest ./smp.test.js",
+    "cleanup": "rm -rf dist",
+    "audit-fix": "npm audit fix"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "devDependencies": {
+    "babel-loader": "7.1.4",
+    "css-loader": "^0.28.10",
+    "jest": "^22.3.0",
+    "style-loader": "^0.20.2",
+    "webpack": "^4.42.0"
+  }
+}
