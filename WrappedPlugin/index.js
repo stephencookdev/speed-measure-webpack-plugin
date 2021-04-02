@@ -152,10 +152,24 @@ const wrapHooks = (orig, pluginName, smp, type) => {
     acc[method] = genProxy(method);
     return acc;
   }, {});
+  const wrappedProxy = new Proxy(wrapped, {
+    get: (target, property) => {
+      return Reflect.get(target, property);
+    },
+    set: (target, property, value) => {
+      Reflect.set(hooks, property, value);
+      const wrappedHook = value; // genProxy(property); // unsure why, but genProxy on custom hooks hang the build
+      Reflect.set(target, property, wrappedHook);
+      return wrappedHook;
+    },
+    deleteProperty: (target, property) => {
+      return Reflect.deleteProperty(target, property);
+    },
+  })
 
-  wrappedHooks.push({ orig: hooks, wrapped, pluginName });
+  wrappedHooks.push({ orig: hooks, wrapped: wrappedProxy, pluginName });
 
-  return wrapped;
+  return wrappedProxy;
 };
 
 const construcNamesToWrap = [
