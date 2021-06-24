@@ -126,7 +126,7 @@ module.exports = class SpeedMeasurePlugin {
 
             loaderInfo[`Comparison`] = `${savedTime ? "-" : "+"}${Math.abs(
               loaderObj.activeTime - previousBuildTime
-            )}ms | ${savedTime ? "(slower)" : "(faster)"}`;
+            )}ms | ${savedTime ? "(faster)" : "(slower)"}`;
           }
         }
       }
