@@ -2,6 +2,7 @@ const MS_IN_MINUTE = 60000;
 const MS_IN_SECOND = 1000;
 
 const chalk = require("chalk");
+const ansiRegex = require("ansi-regex");
 const { fg, bg } = require("./colours");
 const { groupBy, getAverages, getTotalActiveTime } = require("./utils");
 
@@ -117,6 +118,10 @@ module.exports.getHumanOutput = (outputObj, options = {}) => {
   }
 
   output += "\n\n";
+
+  if (options.outputStripAnsi === true) {
+    return output.replace(ansiRegex(), "");
+  }
 
   return output;
 };
