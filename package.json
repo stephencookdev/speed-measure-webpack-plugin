@@ -53,6 +53,7 @@
     "write-good": "^1.0.2"
   },
   "dependencies": {
-    "chalk": "^4.1.0"
+    "chalk": "^4.1.0",
+    "ansi-regex": "5.0.0"
   }
 }

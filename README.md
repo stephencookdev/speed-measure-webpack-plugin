@@ -99,6 +99,13 @@ Default: `console.log`
 - If a string, it specifies the path to a file to output to.
 - If a function, it will call the function with the output as the first parameter
 
+### `options.outputStripAnsi`
+
+Type: `Boolean`<br>
+Default: false
+
+- If true, when produces a human readable output, output will clear color and style.
+
 ### `options.pluginNames`
 
 Type: `Object`<br>
