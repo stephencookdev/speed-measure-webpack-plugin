@@ -34,7 +34,7 @@ yarn add -D speed-measure-webpack-plugin
 
 ## Requirements
 
-SMP requires at least **Node v6**. But otherwise, accepts **all webpack** versions (1, 2, 3, and 4).
+SMP requires at least **Node v6**. But otherwise, accepts **all webpack** versions (1, 2, 3, 4 and 5).
 
 ## Usage
 
