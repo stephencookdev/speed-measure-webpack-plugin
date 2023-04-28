@@ -42,7 +42,17 @@ module.exports = class SpeedMeasurePlugin {
     if (typeof config === "function")
       return (...args) => this.wrap(config(...args));
 
+    // check if MiniCSSExtractPluginExists in the plugins
+    // if yes, push it in the array of Plugins
+    // Reason - MiniCSSExtractPlugin has a check which throws an exception when the invoking plugin is not named `MiniCSSExtractPlugin`
+    // Proxy wrapper hence shall fails
+    let doesMiniCSSExtractPluginExist = false;
+    let miniCSSExtractPlugin;
     config.plugins = (config.plugins || []).map((plugin) => {
+      if (plugin.constructor.name == "MiniCssExtractPlugin") {
+        doesMiniCSSExtractPluginExist = true;
+        miniCSSExtractPlugin = plugin;
+      }
       const pluginName =
         Object.keys(this.options.pluginNames || {}).find(
           (pluginName) => plugin === this.options.pluginNames[pluginName]
@@ -67,6 +77,16 @@ module.exports = class SpeedMeasurePlugin {
     if (!this.smpPluginAdded) {
       config.plugins = config.plugins.concat(this);
       this.smpPluginAdded = true;
+    }
+
+    // add the miniCSSextractplugin
+    if (doesMiniCSSExtractPluginExist) {
+      const cssPluginIndex = config.plugins.findIndex(
+        (e) => e.constructor.name === "MiniCssExtractPlugin"
+      );
+      const cssPlugin = miniCSSExtractPlugin;
+      const configToExport = config;
+      config.plugins[cssPluginIndex] = cssPlugin;
     }
 
     return config;
