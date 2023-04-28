@@ -46,13 +46,25 @@ module.exports = class SpeedMeasurePlugin {
     // if yes, push it in the array of Plugins
     // Reason - MiniCSSExtractPlugin has a check which throws an exception when the invoking plugin is not named `MiniCSSExtractPlugin`
     // Proxy wrapper hence shall fails
+    // trying same logic for ReactRefreshPlugin
     let doesMiniCSSExtractPluginExist = false;
     let miniCSSExtractPlugin;
+
+    let doesReactRefreshPluginExist = false;
+    let reactRefreshPlugin;
+
     config.plugins = (config.plugins || []).map((plugin) => {
+      console.info(plugin.constructor.name);
       if (plugin.constructor.name == "MiniCssExtractPlugin") {
         doesMiniCSSExtractPluginExist = true;
         miniCSSExtractPlugin = plugin;
       }
+
+      if (plugin.constructor.name == "ReactRefreshPlugin") {
+        doesReactRefreshPluginExist = true;
+        reactRefreshPlugin = plugin;
+      }
+
       const pluginName =
         Object.keys(this.options.pluginNames || {}).find(
           (pluginName) => plugin === this.options.pluginNames[pluginName]
@@ -85,8 +97,15 @@ module.exports = class SpeedMeasurePlugin {
         (e) => e.constructor.name === "MiniCssExtractPlugin"
       );
       const cssPlugin = miniCSSExtractPlugin;
-      const configToExport = config;
       config.plugins[cssPluginIndex] = cssPlugin;
+    }
+
+    if (doesReactRefreshPluginExist) {
+      const reactRefreshPluginIndex = config.plugins.findIndex(
+        (e) => e.constructor.name === "ReactRefreshPlugin"
+      );
+      const refreshPlugin = reactRefreshPlugin;
+      config.plugins[reactRefreshPluginIndex] = refreshPlugin;
     }
 
     return config;
