@@ -36,33 +36,19 @@ module.exports = class SpeedMeasurePlugin {
     );
   }
 
-  wrap(config) {
+  wrap(config, pluginsToExclude = []) {
     if (this.options.disable) return config;
     if (Array.isArray(config)) return config.map(this.wrap);
     if (typeof config === "function")
       return (...args) => this.wrap(config(...args));
 
-    // check if MiniCSSExtractPluginExists in the plugins
-    // if yes, push it in the array of Plugins
-    // Reason - MiniCSSExtractPlugin has a check which throws an exception when the invoking plugin is not named `MiniCSSExtractPlugin`
-    // Proxy wrapper hence shall fails
-    // trying same logic for ReactRefreshPlugin
-    let doesMiniCSSExtractPluginExist = false;
-    let miniCSSExtractPlugin;
-
-    let doesReactRefreshPluginExist = false;
-    let reactRefreshPlugin;
+    pluginsToExclude = pluginsToExclude.map((pluginName) =>
+      pluginName.toLowerCase()
+    );
 
     config.plugins = (config.plugins || []).map((plugin) => {
-      console.info(plugin.constructor.name);
-      if (plugin.constructor.name == "MiniCssExtractPlugin") {
-        doesMiniCSSExtractPluginExist = true;
-        miniCSSExtractPlugin = plugin;
-      }
-
-      if (plugin.constructor.name == "ReactRefreshPlugin") {
-        doesReactRefreshPluginExist = true;
-        reactRefreshPlugin = plugin;
+      if (pluginsToExclude.includes(plugin.constructor.name.toLowerCase())) {
+        return plugin;
       }
 
       const pluginName =
@@ -91,23 +77,7 @@ module.exports = class SpeedMeasurePlugin {
       this.smpPluginAdded = true;
     }
 
-    // add the miniCSSextractplugin
-    if (doesMiniCSSExtractPluginExist) {
-      const cssPluginIndex = config.plugins.findIndex(
-        (e) => e.constructor.name === "MiniCssExtractPlugin"
-      );
-      const cssPlugin = miniCSSExtractPlugin;
-      config.plugins[cssPluginIndex] = cssPlugin;
-    }
-
-    if (doesReactRefreshPluginExist) {
-      const reactRefreshPluginIndex = config.plugins.findIndex(
-        (e) => e.constructor.name === "ReactRefreshPlugin"
-      );
-      const refreshPlugin = reactRefreshPlugin;
-      config.plugins[reactRefreshPluginIndex] = refreshPlugin;
-    }
-
+    // config.plugins = config.plugins.filter((plugin)=>plugin);
     return config;
   }
 
