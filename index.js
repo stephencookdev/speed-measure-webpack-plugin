@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const chalk = require("chalk");
+const Compilation = require("webpack/lib/Compilation");
 const { WrappedPlugin, clear } = require("./WrappedPlugin");
 const {
   getModuleName,
@@ -35,13 +36,21 @@ module.exports = class SpeedMeasurePlugin {
     );
   }
 
-  wrap(config) {
+  wrap(config, pluginsToExclude = []) {
     if (this.options.disable) return config;
     if (Array.isArray(config)) return config.map(this.wrap);
     if (typeof config === "function")
       return (...args) => this.wrap(config(...args));
 
+    pluginsToExclude = pluginsToExclude.map((pluginName) =>
+      pluginName.toLowerCase()
+    );
+
     config.plugins = (config.plugins || []).map((plugin) => {
+      if (pluginsToExclude.includes(plugin.constructor.name.toLowerCase())) {
+        return plugin;
+      }
+
       const pluginName =
         Object.keys(this.options.pluginNames || {}).find(
           (pluginName) => plugin === this.options.pluginNames[pluginName]
@@ -68,6 +77,7 @@ module.exports = class SpeedMeasurePlugin {
       this.smpPluginAdded = true;
     }
 
+    // config.plugins = config.plugins.filter((plugin)=>plugin);
     return config;
   }
 
@@ -253,9 +263,24 @@ module.exports = class SpeedMeasurePlugin {
     });
 
     tap(compiler, "compilation", (compilation) => {
-      tap(compilation, "normal-module-loader", (loaderContext) => {
+      const normalModuleLoader = require("webpack/lib/NormalModule").getCompilationHooks(
+        new Compilation(compilation)
+      ).loader;
+      normalModuleLoader.tap("new-normal-module-loader", (loaderContext) => {
         loaderContext[NS] = this.provideLoaderTiming;
       });
+      // console.info(normalModuleHooks);
+      // normalModuleHooks.beforeLoaders.tap("normal-module-loader", (data, callback) => {
+      //   const loaderHook = normalModuleHooks.loader;
+      //   loaderHook.tap("normal-module-loader", (loaderContext, module) => {
+      //     loaderContext[NS] = this.provideLoaderTiming;
+      //   });
+      //   callback(null, data);
+      // });
+
+      // tap(compilation, "normal-module-loader", (loaderContext) => {
+      //   loaderContext[NS] = this.provideLoaderTiming;
+      // });
 
       tap(compilation, "build-module", (module) => {
         const name = getModuleName(module);
