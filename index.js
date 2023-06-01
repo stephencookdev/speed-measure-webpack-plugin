@@ -36,7 +36,8 @@ module.exports = class SpeedMeasurePlugin {
     );
   }
 
-  wrap(config, pluginsToExclude = []) {
+  wrap(config, { pluginsToExclude }) {
+    pluginsToExclude = pluginsToExclude ?? [];
     if (this.options.disable) return config;
     if (Array.isArray(config)) return config.map(this.wrap);
     if (typeof config === "function")
