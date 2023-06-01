@@ -34,7 +34,7 @@ yarn add -D speed-measure-webpack-plugin
 
 ## Requirements
 
-SMP requires at least **Node v6**. But otherwise, accepts **all webpack** versions (1, 2, 3, and 4).
+SMP requires at least **Node v6**. But otherwise, accepts **all webpack** versions (1, 2, 3, 4 and 5).
 
 ## Usage
 
@@ -53,12 +53,20 @@ const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 
 const smp = new SpeedMeasurePlugin();
 
-const webpackConfig = smp.wrap({
+const webpackConfig = smp.wrap(
+{
   plugins: [new MyPlugin(), new MyOtherPlugin()],
-});
+},
+{
+  pluginsToExclude: ['MiniCSSExtractPlugin', 'AngularWebpackPlugin']
+}
+);
 ```
 
 and you're done! SMP will now be printing timing output to the console by default.
+
+Note: pluginsToExclude parameter is optional. It allows you to use SMP with plugins that are not compatible with it.
+For example, MiniCSSExtractPlugin and AngularWebpackPlugin.
 
 Check out the [examples folder](/examples) for some more examples.
 
