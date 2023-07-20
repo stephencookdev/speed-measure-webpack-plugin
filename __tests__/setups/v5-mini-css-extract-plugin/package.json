@@ -1,0 +1,25 @@
+{
+  "name": "v5-mini-css-extract-plugin",
+  "version": "0.0.1",
+  "description": "Test webpack v5 with a MiniCssExtractPlugin set-up with SMP",
+  "scripts": {
+    "full-test": "npm run prepare && npm run test && npm run cleanup",
+    "prepare": "cp -r ../../common/* .",
+    "test": "jest ./smp.test.js",
+    "cleanup": "rm -rf dist",
+    "audit-fix": "npm audit fix"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "css-loader": "^0.28.11",
+    "jest": "^26.6.3",
+    "mini-css-extract-plugin": "^2.7.6",
+    "webpack": "^5.7.0",
+    "webpack-cli": "^5.0.2"
+  }
+}

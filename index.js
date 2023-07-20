@@ -253,9 +253,26 @@ module.exports = class SpeedMeasurePlugin {
     });
 
     tap(compiler, "compilation", (compilation) => {
-      tap(compilation, "normal-module-loader", (loaderContext) => {
-        loaderContext[NS] = this.provideLoaderTiming;
-      });
+      const { webpack } = compiler;
+
+      // normal-module-loader has been abandoned in webpack5
+      if (
+        webpack &&
+        typeof webpack.version === "string" &&
+        webpack.version.split(".")[0] >= 5
+      ) {
+        const { NormalModule } = webpack;
+        NormalModule.getCompilationHooks(compilation).loader.tap(
+          "SpeedMeasureWebpackPlugin",
+          (loaderContext) => {
+            loaderContext[NS] = this.provideLoaderTiming;
+          }
+        );
+      } else {
+        tap(compilation, "normal-module-loader", (loaderContext) => {
+          loaderContext[NS] = this.provideLoaderTiming;
+        });
+      }
 
       tap(compilation, "build-module", (module) => {
         const name = getModuleName(module);
