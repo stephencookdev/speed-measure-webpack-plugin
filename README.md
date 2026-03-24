@@ -1,15 +1,16 @@
 <div align="center">
-  <img width="120" height="120" src="https://rawgit.com/stephencookdev/speed-measure-webpack-plugin/master/logo.svg" />
+  <img width="120" height="120" src="https://raw.githubusercontent.com/stephencookdev/speed-measure-webpack-plugin/refs/heads/master/logo.svg" />
   <h1>
     Speed Measure Plugin
     <div><sup><em>(for webpack)</em></sup></div>
   </h1>
+  <p>
+    <a href="https://18ways.com">Proudly maintained and developed by the team at <strong>18ways</strong></a>.<br />
+    <sub>AI-powered runtime localisation and i18n infrastructure.</sub>
+  </p>
 
-<!-- ALL-CONTRIBUTORS-BADGE:START -->
-
-<a href="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin"><img src="https://travis-ci.org/stephencookdev/speed-measure-webpack-plugin.svg?branch=master" /></a> <a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/npm/dw/speed-measure-webpack-plugin.svg" /></a> <a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/node/v/speed-measure-webpack-plugin.svg" /></a> <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg" /></a> <a href="#contributors"><img src="https://img.shields.io/badge/all_contributors-10-orange.svg" /></a>
-
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+<a href="https://18ways.com"><img alt="18ways Logo" src="https://img.shields.io/badge/MADE%20BY%2018ways-119955.svg?style=for-the-badge&logo=18ways&labelColor=119955"></a>
+<a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/npm/dw/speed-measure-webpack-plugin.svg?style=for-the-badge" /></a> <a href="https://npmjs.com/package/speed-measure-webpack-plugin"><img src="https://img.shields.io/node/v/speed-measure-webpack-plugin.svg?style=for-the-badge" /></a>
 
 </div>
 <br>
