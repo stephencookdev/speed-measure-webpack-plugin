@@ -1,5 +1,27 @@
 const webpack = require("webpack");
-const StatsPlugin = require("stats-webpack-plugin");
+class StatsPlugin {
+  constructor(output) {
+    this.output = output;
+  }
+
+  apply(compiler) {
+    compiler.hooks.emit.tapAsync("StatsPlugin", (compilation, callback) => {
+      let result;
+
+      compilation.assets[this.output] = {
+        size() {
+          return result ? result.length : 0;
+        },
+        source() {
+          result = JSON.stringify(compilation.getStats().toJson());
+          return result;
+        },
+      };
+
+      callback();
+    });
+  }
+}
 
 module.exports = {
   mode: "development",

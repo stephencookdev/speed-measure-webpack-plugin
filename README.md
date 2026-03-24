@@ -200,7 +200,7 @@ We will find solutions to these issues before removing the _(experimental)_ flag
 Type: `Array<String|RegExp>`<br>
 Default: `[]`
 
-When `granularLoaderData` is enabled, SMP prepends its timing loader to each matching
+When you enable `granularLoaderData`, SMP prepends its timing loader to each matching
 loader rule. Use this option to skip rules whose loader chain contains a matching
 loader name or regular expression. String matching checks both the original loader
 request and the normalized package name. E.g.

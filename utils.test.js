@@ -1,3 +1,4 @@
+const { describe, expect, it } = require("bun:test");
 const { prependLoader } = require("./utils");
 
 describe("prependLoader", () => {

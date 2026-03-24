@@ -1,17 +1,13 @@
 const webpack = require("webpack");
 
 class CircularPlugin {
-  constructor() {
-    this.apply = this.apply.bind(this);
-  }
-
   apply(compiler) {
     compiler.compilation = new (function Compilation() {})();
     compiler.parser = new (function Parser() {})();
     compiler.compilation.parser = compiler.parser;
     compiler.parser.compilation = compiler.compilation;
 
-    compiler.plugin("compile", () => {
+    compiler.hooks.compile.tap("CircularPlugin", () => {
       // do some random calc with the looped compilation object, to force its
       // evaluation
       if (compiler.compilation.parser.compilation === false) {

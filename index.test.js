@@ -1,3 +1,4 @@
+const { describe, expect, it } = require("bun:test");
 const SpeedMeasurePlugin = require("./index");
 
 class IncludedPlugin {

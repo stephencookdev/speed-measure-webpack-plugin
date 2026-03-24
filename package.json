@@ -4,13 +4,15 @@
   "description": "Measure + analyse the speed of your webpack loaders and plugins",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "functional-test": "lerna bootstrap && lerna run full-test",
-    "audit-fix": "npm audit fix && lerna run audit-fix --parallel",
-    "documentation-test": "alex ./*.md && write-good ./*.md",
+    "prepare": "husky",
+    "test": "bun test",
+    "ci": "bun run test && bun run functional-test && bun run documentation-test && bun run lint",
+    "functional-test": "bun scripts/run-setups.js full-test --install",
+    "audit-fix": "bun audit",
+    "documentation-test": "alex ./*.md && write-good --no-adverb ./*.md",
     "lint": "prettier --check \"*.{js,json,css,md}\"",
     "fixlint": "prettier --write \"*.{js,json,css,md}\"",
-    "ac": "all-contributors"
+    "ac": "bun x all-contributors-cli"
   },
   "repository": {
     "type": "git",
@@ -20,18 +22,8 @@
     "name": "Stephen Cook",
     "email": "stephen@stephencookdev.co.uk"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,json,css,md}": [
-      "prettier --write",
-      "git add"
-    ]
-  },
   "license": "MIT",
+  "packageManager": "bun@1.3.8",
   "bugs": {
     "url": "https://github.com/stephencookdev/speed-measure-webpack-plugin/issues"
   },
@@ -50,11 +42,8 @@
     "webpack": "^1 || ^2 || ^3 || ^4 || ^5"
   },
   "devDependencies": {
-    "alex": "^9.1.0",
-    "all-contributors-cli": "^6.19.0",
-    "husky": "^4.2.3",
-    "jest": "^26.6.3",
-    "lerna": "^3.22.1",
+    "alex": "^11.0.1",
+    "husky": "^9.1.7",
     "lint-staged": "^10.0.8",
     "prettier": "^2.2.1",
     "write-good": "^1.0.2"

@@ -1,7 +1,0 @@
-language: node_js
-script:
-  - npm run test
-  - npm run functional-test
-cache:
-  directories:
-    - "node_modules"
