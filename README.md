@@ -123,6 +123,32 @@ const webpackConfig = smp.wrap({
 });
 ```
 
+### `options.excludedPlugins`
+
+Type: `Array<String|Function|RegExp>`<br>
+Default: `[]`
+
+Excludes plugins from SMP's proxy wrapping. Entries can be:
+
+- a plugin name
+- a plugin constructor
+- a regular expression matched against plugin names
+
+Name matching checks both `options.pluginNames` aliases and constructor names. E.g.
+
+```javascript
+const smp = new SpeedMeasurePlugin({
+  pluginNames: {
+    customReactRefresh: reactRefreshPlugin,
+  },
+  excludedPlugins: [
+    "customReactRefresh",
+    MiniCssExtractPlugin,
+    /SomeLegacyPlugin$/,
+  ],
+});
+```
+
 ### `options.loaderTopFiles`
 
 Type: `Number`<br>
@@ -167,6 +193,23 @@ This flag is _experimental_. Some loaders will have inaccurate results:
 - loaders emitting file output (e.g. `file-loader`)
 
 We will find solutions to these issues before removing the _(experimental)_ flag on this option.
+
+### `options.excludedLoaders`
+
+Type: `Array<String|RegExp>`<br>
+Default: `[]`
+
+When `granularLoaderData` is enabled, SMP prepends its timing loader to each matching
+loader rule. Use this option to skip rules whose loader chain contains a matching
+loader name or regular expression. String matching checks both the original loader
+request and the normalized package name. E.g.
+
+```javascript
+const smp = new SpeedMeasurePlugin({
+  granularLoaderData: true,
+  excludedLoaders: ["thread-loader", /mini-css-extract-plugin/],
+});
+```
 
 ## FAQ
 

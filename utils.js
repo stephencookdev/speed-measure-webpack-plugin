@@ -93,9 +93,10 @@ module.exports.getTotalActiveTime = (group) => {
   return mergedRanges.reduce((acc, range) => acc + range.end - range.start, 0);
 };
 
-const prependLoader = (rules) => {
+const prependLoader = (rules, shouldExcludeLoader = () => false) => {
   if (!rules) return rules;
-  if (Array.isArray(rules)) return rules.map(prependLoader);
+  if (Array.isArray(rules))
+    return rules.map((rule) => prependLoader(rule, shouldExcludeLoader));
 
   if (rules.loader) {
     rules.use = [rules.loader];
@@ -108,23 +109,25 @@ const prependLoader = (rules) => {
 
   if (rules.use) {
     if (!Array.isArray(rules.use)) rules.use = [rules.use];
-    rules.use.unshift("speed-measure-webpack-plugin/loader");
+    if (!rules.use.some(shouldExcludeLoader)) {
+      rules.use.unshift("speed-measure-webpack-plugin/loader");
+    }
   }
 
   if (rules.oneOf) {
-    rules.oneOf = prependLoader(rules.oneOf);
+    rules.oneOf = prependLoader(rules.oneOf, shouldExcludeLoader);
   }
   if (rules.rules) {
-    rules.rules = prependLoader(rules.rules);
+    rules.rules = prependLoader(rules.rules, shouldExcludeLoader);
   }
   if (Array.isArray(rules.resource)) {
-    rules.resource = prependLoader(rules.resource);
+    rules.resource = prependLoader(rules.resource, shouldExcludeLoader);
   }
   if (rules.resource && rules.resource.and) {
-    rules.resource.and = prependLoader(rules.resource.and);
+    rules.resource.and = prependLoader(rules.resource.and, shouldExcludeLoader);
   }
   if (rules.resource && rules.resource.or) {
-    rules.resource.or = prependLoader(rules.resource.or);
+    rules.resource.or = prependLoader(rules.resource.or, shouldExcludeLoader);
   }
 
   return rules;

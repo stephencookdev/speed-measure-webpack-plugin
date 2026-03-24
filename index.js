@@ -18,6 +18,18 @@ const {
 
 const NS = path.dirname(fs.realpathSync(__filename));
 
+const resetRegex = (pattern) => {
+  pattern.lastIndex = 0;
+  return pattern;
+};
+
+const matchesName = (names, matcher) => {
+  if (typeof matcher === "string") return names.includes(matcher);
+  if (matcher instanceof RegExp)
+    return names.some((name) => resetRegex(matcher).test(name));
+  return false;
+};
+
 module.exports = class SpeedMeasurePlugin {
   constructor(options) {
     this.options = options || {};
@@ -35,32 +47,67 @@ module.exports = class SpeedMeasurePlugin {
     );
   }
 
+  shouldExcludePlugin(plugin) {
+    const excludedPlugins = this.options.excludedPlugins || [];
+    const alias = Object.keys(this.options.pluginNames || {}).find(
+      (pluginName) => plugin === this.options.pluginNames[pluginName]
+    );
+    const pluginNames = [
+      alias,
+      plugin.constructor && plugin.constructor.name,
+    ].filter((name, index, names) => name && names.indexOf(name) === index);
+
+    return excludedPlugins.some(
+      (matcher) =>
+        matchesName(pluginNames, matcher) ||
+        (typeof matcher === "function" &&
+          (plugin === matcher || plugin.constructor === matcher))
+    );
+  }
+
+  shouldExcludeLoader(loader) {
+    const excludedLoaders = this.options.excludedLoaders || [];
+    const loaderNames = [loader.loader || loader]
+      .concat(getLoaderNames([loader]))
+      .filter((name, index, names) => name && names.indexOf(name) === index);
+
+    return excludedLoaders.some((matcher) => matchesName(loaderNames, matcher));
+  }
+
+  wrapPlugin(plugin) {
+    if (!plugin || typeof plugin.apply !== "function") return plugin;
+
+    const pluginName =
+      Object.keys(this.options.pluginNames || {}).find(
+        (pluginName) => plugin === this.options.pluginNames[pluginName]
+      ) ||
+      (plugin.constructor && plugin.constructor.name) ||
+      "(unable to deduce plugin name)";
+    if (this.shouldExcludePlugin(plugin)) return plugin;
+
+    return new WrappedPlugin(plugin, pluginName, this);
+  }
+
   wrap(config) {
     if (this.options.disable) return config;
     if (Array.isArray(config)) return config.map(this.wrap);
     if (typeof config === "function")
       return (...args) => this.wrap(config(...args));
 
-    config.plugins = (config.plugins || []).map((plugin) => {
-      const pluginName =
-        Object.keys(this.options.pluginNames || {}).find(
-          (pluginName) => plugin === this.options.pluginNames[pluginName]
-        ) ||
-        (plugin.constructor && plugin.constructor.name) ||
-        "(unable to deduce plugin name)";
-      return new WrappedPlugin(plugin, pluginName, this);
-    });
+    config.plugins = (config.plugins || []).map((plugin) =>
+      this.wrapPlugin(plugin)
+    );
 
     if (config.optimization && config.optimization.minimizer) {
       config.optimization.minimizer = config.optimization.minimizer.map(
-        (plugin) => {
-          return new WrappedPlugin(plugin, plugin.constructor.name, this);
-        }
+        (plugin) => this.wrapPlugin(plugin)
       );
     }
 
     if (config.module && this.options.granularLoaderData) {
-      config.module = prependLoader(config.module);
+      config.module = prependLoader(config.module, (loader) =>
+        this.shouldExcludeLoader(loader)
+      );
     }
 
     if (!this.smpPluginAdded) {
