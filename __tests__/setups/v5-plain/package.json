@@ -1,7 +1,7 @@
 {
-  "name": "v5-deprecated-hooks",
+  "name": "v5-plain",
   "version": "0.0.1",
-  "description": "Test webpack v5 with a StatsPlugin set-up with SMP",
+  "description": "Test webpack v5 with SMP",
   "scripts": {
     "full-test": "npm run prepare && npm run test && npm run cleanup",
     "prepare": "cp -r ../../common/* .",
@@ -19,6 +19,7 @@
     "css-loader": "^7.1.2",
     "jest": "^26.6.3",
     "style-loader": "^4.0.0",
+    "terser-webpack-plugin": "^5.1.1",
     "webpack": "^5.98.0"
   }
 }

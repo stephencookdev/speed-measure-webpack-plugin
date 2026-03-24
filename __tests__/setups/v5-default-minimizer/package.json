@@ -1,7 +1,7 @@
 {
-  "name": "v5-deprecated-hooks",
+  "name": "v5-default-minimizer",
   "version": "0.0.1",
-  "description": "Test webpack v5 with a StatsPlugin set-up with SMP",
+  "description": "Test webpack v5 default minimizer handling with SMP",
   "scripts": {
     "full-test": "npm run prepare && npm run test && npm run cleanup",
     "prepare": "cp -r ../../common/* .",

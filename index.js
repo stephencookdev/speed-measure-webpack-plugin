@@ -253,9 +253,32 @@ module.exports = class SpeedMeasurePlugin {
     });
 
     tap(compiler, "compilation", (compilation) => {
-      tap(compilation, "normal-module-loader", (loaderContext) => {
+      const loaderHook =
+        (compiler.webpack ||
+          (compilation.compiler && compilation.compiler.webpack)) &&
+        (
+          compiler.webpack ||
+          (compilation.compiler && compilation.compiler.webpack)
+        ).NormalModule &&
+        typeof (
+          compiler.webpack ||
+          (compilation.compiler && compilation.compiler.webpack)
+        ).NormalModule.getCompilationHooks === "function"
+          ? (
+              compiler.webpack ||
+              (compilation.compiler && compilation.compiler.webpack)
+            ).NormalModule.getCompilationHooks(compilation).loader
+          : null;
+
+      const setLoaderTiming = (loaderContext) => {
         loaderContext[NS] = this.provideLoaderTiming;
-      });
+      };
+
+      if (loaderHook && typeof loaderHook.tap === "function") {
+        loaderHook.tap("smp", setLoaderTiming);
+      } else {
+        tap(compilation, "normal-module-loader", setLoaderTiming);
+      }
 
       tap(compilation, "build-module", (module) => {
         const name = getModuleName(module);

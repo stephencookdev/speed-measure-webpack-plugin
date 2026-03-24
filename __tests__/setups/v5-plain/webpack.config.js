@@ -1,8 +1,6 @@
 const webpack = require("webpack");
-const StatsPlugin = require("stats-webpack-plugin");
 
 module.exports = {
-  mode: "development",
   entry: {
     bundle: ["./app.js"],
   },
@@ -10,11 +8,7 @@ module.exports = {
     path: __dirname + "/dist",
     hashFunction: "sha256",
   },
-  plugins: [
-    new StatsPlugin("stats.json"),
-    // StatsPlugin needs to be placed _before_ DefinePlugin to repro the issue
-    new webpack.DefinePlugin({ FOO: "'BAR'" }),
-  ],
+  plugins: [new webpack.DefinePlugin({ FOO: "'BAR'" })],
   module: {
     rules: [
       {

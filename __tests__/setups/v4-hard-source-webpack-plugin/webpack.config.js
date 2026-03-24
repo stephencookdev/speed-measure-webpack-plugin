@@ -2,26 +2,28 @@ const webpack = require("webpack");
 const HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
 
 module.exports = {
+  mode: "development",
   entry: {
     bundle: ["./app.js"],
   },
   output: {
-    path: __dirname + "/dist"
+    path: __dirname + "/dist",
+    hashFunction: "sha256",
   },
   plugins: [
     new webpack.DefinePlugin({ FOO: "'BAR'" }),
-    new HardSourceWebpackPlugin()
+    new HardSourceWebpackPlugin(),
   ],
   module: {
     rules: [
       {
         test: /\.js?$/,
-        use: "babel-loader"
+        use: "babel-loader",
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
-      }
-    ]
-  }
+        use: ["style-loader", "css-loader"],
+      },
+    ],
+  },
 };

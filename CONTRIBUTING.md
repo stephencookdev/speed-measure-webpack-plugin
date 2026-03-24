@@ -4,6 +4,8 @@ Contributors are welcome to help out with this repository! 😊
 
 Please follow this guide when raising issues, and contributing to the SMP repository.
 
+Running the repo locally and executing the test suite requires Node v18+.
+
 ## Raising an Issue
 
 If you're raising an issue with SMP being incompatible with a particular webpack config, plugin, or loader - then please include reproduction steps.
